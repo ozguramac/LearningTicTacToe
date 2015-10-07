@@ -18,16 +18,11 @@ class PersistController {
 
     private static final String COLL_NAME = "ticTacToeHist";
 
-    private final String host;
-    private final String dbName;
-
     private static MongoClient mongoClient = null;
     private static DB db = null;
     private static DBCollection dbColl = null;
 
-    PersistController(final String host, final String dbName) {
-        this.host = host;
-        this.dbName = dbName;
+    PersistController() {
     }
 
     void save(final GameHistory history)  throws PersistenceException {
@@ -125,17 +120,16 @@ class PersistController {
     }
 
     private DBCollection getDbCollection() throws PersistenceException {
-        if (dbColl != null
-                && (null == host || mongoClient.getAddress().sameHost(host))
-                && db.getName().equals(dbName))
+        final String dbName = "test";
+        if (dbColl != null && db.getName().equals(dbName))
         {
             return dbColl; //reuse db collection
         }
 
         try {
-            mongoClient = new MongoClient(host);
+            mongoClient = new MongoClient();
         }
-        catch (UnknownHostException e) {//TODO: Extract resource
+        catch (UnknownHostException e) {
             throw new PersistenceException("Failed to get mongo client", e);
         }
 
