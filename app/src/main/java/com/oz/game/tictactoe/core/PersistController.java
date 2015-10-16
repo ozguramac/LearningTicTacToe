@@ -77,7 +77,7 @@ class PersistController {
         return new GameHistory.Entry(key, l, w, dbId);
     }
 
-    GameHistory.Entry findMax(final GameHistory.Key key) throws PersistenceException {
+    GameHistory.Entry findBest(final GameHistory.Key key) throws PersistenceException {
         final DBCollection coll = getDbCollection();
         final DBObject dbObj = getDbObjForKey(key);
         final long start = System.currentTimeMillis();
@@ -91,7 +91,7 @@ class PersistController {
         );
         final long span = System.currentTimeMillis() - start;
         if (span > 1000) {
-            log.info("PersistController findMax query took "+(span/1000d)+" seconds!");
+            log.info("PersistController find best query took "+(span/1000d)+" seconds!");
         }
         if (null == found) {
             return null;

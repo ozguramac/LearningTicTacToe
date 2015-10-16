@@ -7,8 +7,6 @@ import com.oz.game.tictactoe.io.GameOutput;
  * Created by developer on 8/15/15.
  */
 public class GameConfig {
-    private String dbHost = null;
-    private String dbName;
     private PlayerType playerOne, playerTwo;
     private boolean bPrintState = false;
     private GameInput in;
@@ -20,24 +18,6 @@ public class GameConfig {
 
     public GameConfig printState(boolean bPrintState) {
         this.bPrintState = bPrintState;
-        return this;
-    }
-
-    public String getDbHost() {
-        return dbHost;
-    }
-
-    public GameConfig dbHost(String dbHost) {
-        this.dbHost = dbHost;
-        return this;
-    }
-
-    public String getDbName() {
-        return dbName;
-    }
-
-    public GameConfig dbName(String dbName) {
-        this.dbName = dbName;
         return this;
     }
 

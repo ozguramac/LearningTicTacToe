@@ -28,7 +28,7 @@ public class TestPersistController {
 
     @Before
     public void beforeTest() {
-        persistController = new PersistController(null, "test");
+        persistController = new PersistController();
     }
 
     @After
@@ -50,7 +50,7 @@ public class TestPersistController {
 
         persistController.save(mockHistory);
 
-        final GameHistory.Entry foundEntry = persistController.findMax(key);
+        final GameHistory.Entry foundEntry = persistController.findBest(key);
         Assert.assertEquals("Weight", entry2.getWeight(), foundEntry.getWeight());
 
         persistController.delete(persistController.find(entry1));
@@ -61,15 +61,9 @@ public class TestPersistController {
     @Test
     public void testNoFind() throws Exception {
         final GameHistory.Key key = new GameHistory.Key(111, 222, 'S');
-        Assert.assertNull("Not found", persistController.findMax(key));
+        Assert.assertNull("Not found", persistController.findBest(key));
         final GameHistory.Entry entry = new GameHistory.Entry(key, 333, 0.000);
         Assert.assertNull("Not found", persistController.find(entry));
-    }
-
-    @Test
-    public void testBadHost() throws Exception {
-        thrown.expect(PersistController.PersistenceException.class);
-        new PersistController("badHost", "test").save(mockHistory);
     }
 
     @Ignore @Test

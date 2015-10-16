@@ -9,8 +9,9 @@ package com.oz.game.tictactoe.backend;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.googlecode.objectify.ObjectifyService;
 
-import javax.inject.Named;
+import static com.googlecode.objectify.ObjectifyService.ofy;
 
 /**
  * An endpoint class we are exposing
@@ -25,15 +26,30 @@ import javax.inject.Named;
         )
 )
 public class PersistEndpoint {
-
-    /**
-     * Save entries
-     */
-    @ApiMethod(name = "save")
-    public void save(@Named("entries") final EntryBean[] entries) {
-
+    static {
+        ObjectifyService.register(PersistEntry.class);
     }
 
-    //TODO: Model after persist controller's interaction with mongo db
+    @ApiMethod(name = "save")
+    public void save(final PersistBean persistBean) throws PersistException {
+        ofy().save().entities(persistBean.getEntries()).now();
+    }
 
+    @ApiMethod(name = "find")
+    public PersistEntry find(final PersistEntry entry) throws PersistException {
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+    @ApiMethod(name = "findBest")
+    public PersistEntry findBest(final PersistEntry partialEntry) throws PersistException {
+        //TODO
+        throw new UnsupportedOperationException();
+    }
+
+    @ApiMethod(name = "delete")
+    public void delete(final PersistEntry entry) throws PersistException {
+        //TODO
+        throw new UnsupportedOperationException();
+    }
 }

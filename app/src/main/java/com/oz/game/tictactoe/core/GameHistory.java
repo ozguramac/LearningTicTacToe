@@ -147,7 +147,7 @@ class GameHistory {
         //Find best move from history
         final Key key = new Key(state, gp);
         try {
-            final Entry found = persistController.findMax(key);
+            final Entry found = persistController.findBest(key);
             if (found != null && found.getWeight() > 0.5d) { //Found and better than 50-50 prob!
                 numBestMoveFinds++;
                 return new GameState.Spot(found.getMoveLocLum());

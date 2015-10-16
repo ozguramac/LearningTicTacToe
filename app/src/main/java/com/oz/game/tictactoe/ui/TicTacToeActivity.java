@@ -157,8 +157,6 @@ public class TicTacToeActivity extends Activity {
         }
 
         final GameConfig gameConfig = new GameConfig()
-                //TODO: Replace with remote db host and authentication
-                .dbName("test")
                 .playerOne(GameConfig.PlayerType.HUMAN)
                 .playerTwo(GameConfig.PlayerType.COMPUTER)
                 .input(new GameInput() {

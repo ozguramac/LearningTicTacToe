@@ -71,7 +71,7 @@ public class TestGameHistory {
 
         verify(mockState).of(GameState.GamePiece.O);
         verify(mockState).of(GameState.GamePiece.X);
-        verify(mockPersistController).findMax(any(GameHistory.Key.class));
+        verify(mockPersistController).findBest(any(GameHistory.Key.class));
 
         Assert.assertEquals("Spot loc num", spot.toNum(), randomSpot.toNum());
     }
@@ -81,14 +81,14 @@ public class TestGameHistory {
         final int locNum = 666;
         final GameHistory.Entry mockFoundEntry = mock(GameHistory.Entry.class);
         when(mockFoundEntry.getMoveLocLum()).thenReturn(locNum);
-        when(mockPersistController.findMax(any(GameHistory.Key.class))).thenReturn(mockFoundEntry);
+        when(mockPersistController.findBest(any(GameHistory.Key.class))).thenReturn(mockFoundEntry);
 
         final GameState.GamePiece gp = GameState.GamePiece.O;
         final GameState.Spot bestSpot = history.getBestMove(mockState, gp);
 
         verify(mockState).of(GameState.GamePiece.O);
         verify(mockState).of(GameState.GamePiece.X);
-        verify(mockPersistController).findMax(any(GameHistory.Key.class));
+        verify(mockPersistController).findBest(any(GameHistory.Key.class));
 
         Assert.assertEquals("Best spot loc num", locNum, bestSpot.toNum());
     }

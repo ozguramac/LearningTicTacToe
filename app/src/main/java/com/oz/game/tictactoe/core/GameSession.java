@@ -26,7 +26,7 @@ public class GameSession {
     public GameSession(final GameConfig config) {
         referee = new Referee();
 
-        persistController = new PersistController(config.getDbHost(), config.getDbName());
+        persistController = new PersistController();
         history = new GameHistory(persistController);
         state = new GameState(history);
 

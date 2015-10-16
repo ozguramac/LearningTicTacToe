@@ -34,7 +34,6 @@ public class TrainingSession {
 
     public static void main(String[] args) {
         new TrainingSession(new GameConfig()
-                .dbName("test")
                 .playerOne(GameConfig.PlayerType.COMPUTER)
                 .playerTwo(GameConfig.PlayerType.COMPUTER)
                 .printState(true)
