@@ -1,5 +1,6 @@
 package com.oz.game.tictactoe.core;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -10,7 +11,7 @@ import java.util.logging.Logger;
 /**
  * Created by developer on 7/11/15.
  */
-class GameHistory {
+class GameHistory implements PersistContainer {
     private static final Logger log = Logger.getLogger(GameHistory.class.getName());
 
     private final PersistController persistController;
@@ -18,7 +19,7 @@ class GameHistory {
 
     private int numBestMoveFinds = 0;
 
-    static class Key {
+    static class Key implements PersistEntry {
         private final int x; //state of X
         private final int o; //state of O
         private final char t; //game piece with the turn
@@ -33,23 +34,30 @@ class GameHistory {
             this(state.of(GameState.GamePiece.X), state.of(GameState.GamePiece.O), gp.toChar());
         }
 
-        int getStateOfX() {
+        public int getStateOfX() {
             return x;
         }
 
-        int getStateOfO() {
+        public int getStateOfO() {
             return o;
         }
 
-        char getWhoseTurn() {
+        public int getWhoseTurn() {
             return t;
+        }
+
+        public int getMoveLocNum() {
+            throw new UnsupportedOperationException();
+        }
+
+        public double getWeight() {
+            throw new UnsupportedOperationException();
         }
     }
 
     static class Entry extends Key {
         private final int l; //location num of the move
         private double w; //probability weight of move winning [0,1]
-        private Object dbId = null; //database id
 
         private Entry(final int x, final int o, final char t, final int l) {
             super(x, o, t);
@@ -62,19 +70,13 @@ class GameHistory {
                     , gp.toChar(), spot.toNum());
         }
 
-        Entry (final Key key, final int l, final double w, final Object dbId) {
-            this(key.getStateOfX(), key.getStateOfO(), key.getWhoseTurn(), l);
-            this.w = w;
-            this.dbId = dbId;
-        }
-
-        Entry (final Key key, final int l, final double w) {
-            this(key, l ,w, null);
+        Entry (final PersistEntry pe) {
+            this(pe.getStateOfX(), pe.getStateOfO(), (char)pe.getWhoseTurn(), pe.getMoveLocNum());
+            this.w = pe.getWeight();
         }
 
         private void merge(final Entry e) {
             this.w = e.w;
-            this.dbId = e.dbId;
         }
 
         private boolean matches(final GameState.GamePiece gp) {
@@ -89,16 +91,14 @@ class GameHistory {
 
         private void tie() { w = (w + 0.5) / 2.0; }
 
-        int getMoveLocLum() {
+        @Override
+        public int getMoveLocNum() {
             return l;
         }
 
-        double getWeight() {
+        @Override
+        public double getWeight() {
             return w;
-        }
-
-        Object getDbId() {
-            return dbId;
         }
     }
 
@@ -110,8 +110,8 @@ class GameHistory {
         entries.add(new Entry(state, spot, gp));
     }
 
-    Iterable<Entry> getEntries() {
-        return Collections.unmodifiableCollection(entries);
+    public Iterable<PersistEntry> getEntries() {
+        return Collections.<PersistEntry>unmodifiableCollection(entries);
     }
 
     void persist(final GameState.GamePiece winner) {
@@ -138,7 +138,7 @@ class GameHistory {
             //Persist to db
             persistController.save(this);
         }
-        catch (PersistController.PersistenceException e) {
+        catch (PersistException e) {
             log.throwing("Game History", "persist", e);
         }
     }
@@ -150,10 +150,10 @@ class GameHistory {
             final Entry found = persistController.findBest(key);
             if (found != null && found.getWeight() > 0.5d) { //Found and better than 50-50 prob!
                 numBestMoveFinds++;
-                return new GameState.Spot(found.getMoveLocLum());
+                return new GameState.Spot(found.getMoveLocNum());
             }
         }
-        catch (PersistController.PersistenceException e) {
+        catch (PersistException e) {
             log.throwing("Game History", "get best move", e);
         }
 

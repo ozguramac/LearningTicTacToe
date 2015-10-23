@@ -9,7 +9,11 @@ package com.oz.game.tictactoe.backend;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.ApiNamespace;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
+
+import java.util.Map;
+import java.util.logging.Logger;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
 
@@ -26,30 +30,79 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
         )
 )
 public class PersistEndpoint {
+    private static final Logger log = Logger.getLogger(PersistEndpoint.class.getName());
+
     static {
-        ObjectifyService.register(PersistEntry.class);
+        ObjectifyService.register(PersistBeanEntry.class);
     }
 
     @ApiMethod(name = "save")
-    public void save(final PersistBean persistBean) throws PersistException {
-        ofy().save().entities(persistBean.getEntries()).now();
+    public PersistBean save(final PersistBean persistBean) throws PersistException {
+        try {
+            final Map<Key<PersistBeanEntry>, PersistBeanEntry> map = ofy().save()
+                    .entities(persistBean.getEntries())
+                    .now();
+
+            for (Map.Entry<Key<PersistBeanEntry>, PersistBeanEntry> e : map.entrySet()) {
+                for (PersistBeanEntry pe : persistBean.getEntries()) {
+                    if (e.getValue() == pe) {
+                        pe.setDbId(e.getKey().getId());
+                    }
+                }
+            }
+
+            return persistBean;
+        }
+        catch (Throwable t) {
+            log.throwing(getClass().getName(), "save", t);
+            throw new PersistException("Could not persist "+persistBean);
+        }
     }
 
     @ApiMethod(name = "find")
-    public PersistEntry find(final PersistEntry entry) throws PersistException {
-        //TODO
-        throw new UnsupportedOperationException();
+    public PersistEntry load(final PersistEntry entry) throws PersistException {
+        try {
+            return ofy().load().type(PersistBeanEntry.class)
+                    .filter("x", entry.getStateOfX())
+                    .filter("o", entry.getStateOfO())
+                    .filter("t", entry.getWhoseTurn())
+                    .filter("l", entry.getMoveLocNum())
+                    .first()
+                    .now();
+        }
+        catch (Throwable t) {
+            log.throwing(getClass().getName(), "load", t);
+            throw new PersistException("Could not find "+entry);
+        }
     }
 
     @ApiMethod(name = "findBest")
-    public PersistEntry findBest(final PersistEntry partialEntry) throws PersistException {
-        //TODO
-        throw new UnsupportedOperationException();
+    public PersistEntry findMax(final PersistEntry entry) throws PersistException {
+        try {
+            return ofy().load().type(PersistBeanEntry.class)
+                    .filter("x", entry.getStateOfX())
+                    .filter("o", entry.getStateOfO())
+                    .filter("t", entry.getWhoseTurn())
+                    .order("-w")
+                    .first()
+                    .now();
+        }
+        catch (Throwable t) {
+            log.throwing(getClass().getName(), "findMax", t);
+            throw new PersistException("Could not find best like "+entry);
+        }
     }
 
     @ApiMethod(name = "delete")
-    public void delete(final PersistEntry entry) throws PersistException {
-        //TODO
-        throw new UnsupportedOperationException();
+    public void remove(final PersistBeanEntry entry) throws PersistException {
+        try {
+            ofy().delete()
+                    .entity(entry)
+                    .now();
+        }
+        catch (Throwable t) {
+            log.throwing(getClass().getName(), "remove", t);
+            throw new PersistException("Could not delete "+entry);
+        }
     }
 }

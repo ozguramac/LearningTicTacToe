@@ -43,7 +43,7 @@ public class TestGameHistory {
         Assert.assertEquals(key.getStateOfX(), e.getStateOfX());
         Assert.assertEquals(key.getStateOfO(), e.getStateOfO());
         Assert.assertEquals(key.getWhoseTurn(), e.getWhoseTurn());
-        Assert.assertEquals(l, e.getMoveLocLum());
+        Assert.assertEquals(l, e.getMoveLocNum());
         Assert.assertEquals(w, e.getWeight());
     }
 
@@ -58,7 +58,7 @@ public class TestGameHistory {
 
         for (GameHistory.Entry entry : history.getEntries()) {
             Assert.assertEquals("Game piece", gp.toChar(), entry.getWhoseTurn());
-            Assert.assertEquals("Spot", spot.toNum(), entry.getMoveLocLum());
+            Assert.assertEquals("Spot", spot.toNum(), entry.getMoveLocNum());
         }
     }
 
@@ -80,7 +80,7 @@ public class TestGameHistory {
     public void testGetBestMove() throws Exception {
         final int locNum = 666;
         final GameHistory.Entry mockFoundEntry = mock(GameHistory.Entry.class);
-        when(mockFoundEntry.getMoveLocLum()).thenReturn(locNum);
+        when(mockFoundEntry.getMoveLocNum()).thenReturn(locNum);
         when(mockPersistController.findBest(any(GameHistory.Key.class))).thenReturn(mockFoundEntry);
 
         final GameState.GamePiece gp = GameState.GamePiece.O;

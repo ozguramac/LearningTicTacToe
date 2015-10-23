@@ -25,6 +25,8 @@ dependencies {
     appengineSdk 'com.google.appengine:appengine-java-sdk:1.9.18'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.9.5'
+    testCompile 'com.google.appengine:appengine-api-labs:1.9.18'
+    testCompile 'com.google.appengine:appengine-api-stubs:1.9.18'
     testCompile 'com.google.appengine:appengine-testing:1.9.18'
     compile 'com.google.appengine:appengine-endpoints:1.9.18'
     compile 'com.google.appengine:appengine-endpoints-deps:1.9.18'

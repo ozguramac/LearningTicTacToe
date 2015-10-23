@@ -1,4 +1,4 @@
-package com.oz.game.tictactoe.backend;
+package com.oz.game.tictactoe.core;
 
 /**
  * Created by developer on 10/22/15.
