@@ -11,17 +11,27 @@ public class GameConfig {
     private boolean bPrintState = false;
     private GameInput in;
     private GameOutput out;
+    private PersistFacade persistFacade;
+
+    public GameConfig persistFacade(final PersistFacade persistFacade) {
+        this.persistFacade = persistFacade;
+        return this;
+    }
+
+    public PersistFacade getPersistFacade() {
+        return persistFacade;
+    }
 
     public boolean isPrintState() {
         return bPrintState;
     }
 
-    public GameConfig printState(boolean bPrintState) {
+    public GameConfig printState(final boolean bPrintState) {
         this.bPrintState = bPrintState;
         return this;
     }
 
-    public GameConfig input(GameInput in) {
+    public GameConfig input(final GameInput in) {
         this.in = in;
         return this;
     }
@@ -30,7 +40,7 @@ public class GameConfig {
         return in;
     }
 
-    public GameConfig output(GameOutput out) {
+    public GameConfig output(final GameOutput out) {
         this.out = out;
         return this;
     }
@@ -43,7 +53,7 @@ public class GameConfig {
         return playerOne;
     }
 
-    public GameConfig playerOne(PlayerType playerOne) {
+    public GameConfig playerOne(final PlayerType playerOne) {
         this.playerOne = playerOne;
         return this;
     }
@@ -52,7 +62,7 @@ public class GameConfig {
         return playerTwo;
     }
 
-    public GameConfig playerTwo(PlayerType playerTwo) {
+    public GameConfig playerTwo(final PlayerType playerTwo) {
         this.playerTwo = playerTwo;
         return this;
     }
