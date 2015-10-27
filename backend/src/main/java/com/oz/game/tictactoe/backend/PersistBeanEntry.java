@@ -9,7 +9,7 @@ import com.googlecode.objectify.condition.IfNotDefault;
  * Created by developer on 10/15/15.
  */
 @Entity
-public class PersistBeanEntry implements PersistEntry {
+public class PersistBeanEntry {
     //Database id
     @Id private Long dbId = null;
 
@@ -29,56 +29,51 @@ public class PersistBeanEntry implements PersistEntry {
     @Index(IfNotDefault.class)
     private double w = Double.NaN;
 
-    @Override
-    public int getStateOfX() {
-        return x;
-    }
-
-    @Override
-    public int getStateOfO() {
-        return o;
-    }
-
-    @Override
-    public int getWhoseTurn() {
-        return t;
-    }
-
-    public void setStateOfX(int x) {
-        this.x = x;
-    }
-
-    public void setStateOfO(int o) {
-        this.o = o;
-    }
-
-    public void setWhoseTurn(int t) {
-        this.t = t;
-    }
-
     public Long getDbId() {
         return dbId;
     }
 
-    @Override
-    public int getMoveLocNum() {
-        return l;
-    }
-
-    @Override
-    public double getWeight() {
-        return w;
-    }
-
-    public void setDbId(Long dbId) {
+    void setDbId(long dbId) {
         this.dbId = dbId;
     }
 
-    public void setMoveLocNum(int l) {
+    public int getX() {
+        return x;
+    }
+
+    public int getO() {
+        return o;
+    }
+
+    public int getT() {
+        return t;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setO(int o) {
+        this.o = o;
+    }
+
+    public void setT(int t) {
+        this.t = t;
+    }
+
+    public int getL() {
+        return l;
+    }
+
+    public double getW() {
+        return w;
+    }
+
+    public void setL(int l) {
         this.l = l;
     }
 
-    public void setWeight(double w) {
+    public void setW(double w) {
         this.w = w;
     }
 

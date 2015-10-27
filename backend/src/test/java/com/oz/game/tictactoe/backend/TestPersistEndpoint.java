@@ -52,10 +52,10 @@ public class TestPersistEndpoint {
     @Test
     public void testFind() throws Exception {
         final PersistBean savedPb = save();
-        final PersistEntry pe = savedPb.getEntries()[0];
+        final PersistBeanEntry pe = savedPb.getEntries()[0];
 
         log.info("Searching for "+pe);
-        final PersistEntry foundPe = endpoint.load(pe);
+        final PersistBeanEntry foundPe = endpoint.load(pe);
         Assert.assertNotNull(foundPe);
         log.info("Found "+foundPe);
     }
@@ -63,12 +63,12 @@ public class TestPersistEndpoint {
     @Test
     public void testFindMax() throws Exception {
         final PersistBean savedPb = save();
-        final PersistEntry pe = savedPb.getEntries()[0];
+        final PersistBeanEntry pe = savedPb.getEntries()[0];
 
         log.info("Searching max like " + pe);
-        final PersistEntry bestPe = endpoint.findMax(pe);
+        final PersistBeanEntry bestPe = endpoint.findMax(pe);
         Assert.assertNotNull(bestPe);
-        Assert.assertTrue(bestPe.getWeight() > pe.getWeight());
+        Assert.assertTrue(bestPe.getW() > pe.getW());
         log.info("Found max "+bestPe);
     }
 
@@ -86,18 +86,18 @@ public class TestPersistEndpoint {
 
     private PersistBean save() throws PersistException {
         final PersistBeanEntry pe0 = new PersistBeanEntry();
-        pe0.setStateOfO(666);
-        pe0.setStateOfX(666);
-        pe0.setWhoseTurn('X');
-        pe0.setMoveLocNum(666);
-        pe0.setWeight(0.666);
+        pe0.setO(666);
+        pe0.setX(666);
+        pe0.setT('X');
+        pe0.setL(666);
+        pe0.setW(0.666);
 
         final PersistBeanEntry pe1 = new PersistBeanEntry();
-        pe1.setStateOfO(666);
-        pe1.setStateOfX(666);
-        pe1.setWhoseTurn('X');
-        pe1.setMoveLocNum(888);
-        pe1.setWeight(0.999);
+        pe1.setO(666);
+        pe1.setX(666);
+        pe1.setT('X');
+        pe1.setL(888);
+        pe1.setW(0.999);
 
         final PersistBean pb = new PersistBean();
         pb.setEntries(new PersistBeanEntry[]{

@@ -5,10 +5,9 @@ import java.util.Arrays;
 /**
  * TicTacToe persist model we are sending through endpoints
  */
-public class PersistBean implements PersistContainer {
+public class PersistBean {
     private PersistBeanEntry[] entries = null;
 
-    @Override
     public PersistBeanEntry[] getEntries() {
         return entries;
     }

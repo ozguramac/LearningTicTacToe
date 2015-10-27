@@ -8,7 +8,7 @@ public interface PersistEntry {
 
     int getStateOfO();
 
-    int getWhoseTurn();
+    char getWhoseTurn();
 
     int getMoveLocNum();
 

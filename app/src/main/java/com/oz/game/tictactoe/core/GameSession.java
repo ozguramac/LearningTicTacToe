@@ -26,7 +26,7 @@ public class GameSession {
     public GameSession(final GameConfig config) {
         referee = new Referee();
 
-        persistController = new PersistController();
+        persistController = new PersistController(config.getPersistFacade());
         history = new GameHistory(persistController);
         state = new GameState(history);
 
@@ -105,9 +105,5 @@ public class GameSession {
             log.info("Best move find rate => "
                     + percFmt.format(percOfBestMoveFinds));
         }
-    }
-
-    public static void cleanUp() {
-        PersistController.cleanUp();
     }
 }

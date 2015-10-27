@@ -5,11 +5,11 @@ package com.oz.game.tictactoe.core;
  */
 public interface PersistFacade
 {
-    public <C extends PersistContainer> C save(C persistContainer) throws PersistException;
+    public void persist(PersistContainer persistContainer) throws PersistenceException;
 
-    public <E extends PersistEntry> E find(E entry) throws PersistException;
+    public PersistEntry match(PersistEntry entry) throws PersistenceException;
 
-    public <E extends PersistEntry> E findMax(E entry) throws PersistException;
+    public PersistEntry matchBest(PersistEntry entry) throws PersistenceException;
 
-    public <E extends PersistEntry> void delete(E entry) throws PersistException;
+    public void delete(PersistEntry entry) throws PersistenceException;
 }

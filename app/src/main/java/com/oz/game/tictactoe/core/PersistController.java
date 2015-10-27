@@ -14,17 +14,18 @@ class PersistController {
         this.facade = facade;
     }
 
-    void save(final GameHistory history)  throws PersistException {
-        facade.save(history);
+    void save(final GameHistory history)  throws PersistenceException {
+        facade.persist(history);
     }
 
-    GameHistory.Entry find(final GameHistory.Entry entry) throws PersistException {
-        return facade.find(entry);
+    GameHistory.Entry find(final GameHistory.Entry entry) throws PersistenceException {
+        final PersistEntry fullEntry = facade.match(entry);
+        return new GameHistory.Entry(entry, entry.getMoveLocNum(), fullEntry.getWeight());
     }
 
-    GameHistory.Entry findBest(final GameHistory.Key key) throws PersistException {
+    GameHistory.Entry findBest(final GameHistory.Key key) throws PersistenceException {
         final long start = System.currentTimeMillis();
-        final PersistEntry found = facade.find(key);
+        final PersistEntry found = facade.matchBest(key);
         final long span = System.currentTimeMillis() - start;
         if (span > 1000) {
             log.info("PersistController find best query took "+(span/1000d)+" seconds!");
@@ -32,10 +33,10 @@ class PersistController {
         if (null == found) {
             return null;
         }
-        return new GameHistory.Entry(found);
+        return new GameHistory.Entry(key, found.getMoveLocNum(), found.getWeight());
     }
 
-    void delete(final GameHistory.Entry entry) throws PersistException {
+    void delete(final GameHistory.Entry entry) throws PersistenceException {
         facade.delete(entry);
     }
 }

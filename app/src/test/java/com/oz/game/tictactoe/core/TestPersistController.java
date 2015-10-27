@@ -24,18 +24,12 @@ public class TestPersistController {
     @Rule public ExpectedException thrown = ExpectedException.none();
 
     @Mock private GameHistory mockHistory;
+    @Mock private PersistFacade mockPersistFacade;
     private PersistController persistController;
 
     @Before
     public void beforeTest() {
-        persistController = new PersistController();
-    }
-
-    @After
-    public void afterTest() {
-        if (persistController != null) {
-            persistController.cleanUp();
-        }
+        persistController = new PersistController(mockPersistFacade);
     }
 
     @Test
@@ -72,7 +66,7 @@ public class TestPersistController {
         final GameHistory.Entry e = new GameHistory.Entry(key, 222, 0.664);
 
         //TODO: Negative test of write error some how??
-        thrown.expect(PersistController.PersistenceException.class);
+        thrown.expect(PersistenceException.class);
         persistController.delete(e);
     }
 }

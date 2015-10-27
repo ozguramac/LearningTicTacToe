@@ -1,6 +1,5 @@
 package com.oz.game.tictactoe.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -42,7 +41,7 @@ class GameHistory implements PersistContainer {
             return o;
         }
 
-        public int getWhoseTurn() {
+        public char getWhoseTurn() {
             return t;
         }
 
@@ -70,9 +69,9 @@ class GameHistory implements PersistContainer {
                     , gp.toChar(), spot.toNum());
         }
 
-        Entry (final PersistEntry pe) {
-            this(pe.getStateOfX(), pe.getStateOfO(), (char)pe.getWhoseTurn(), pe.getMoveLocNum());
-            this.w = pe.getWeight();
+        Entry (final Key k, int l, double w) {
+            this(k.getStateOfX(), k.getStateOfO(), k.getWhoseTurn(), l);
+            this.w = w;
         }
 
         private void merge(final Entry e) {
@@ -110,8 +109,8 @@ class GameHistory implements PersistContainer {
         entries.add(new Entry(state, spot, gp));
     }
 
-    public Iterable<PersistEntry> getEntries() {
-        return Collections.<PersistEntry>unmodifiableCollection(entries);
+    public Iterable<Entry> getEntries() {
+        return Collections.unmodifiableCollection(entries);
     }
 
     void persist(final GameState.GamePiece winner) {
@@ -138,7 +137,7 @@ class GameHistory implements PersistContainer {
             //Persist to db
             persistController.save(this);
         }
-        catch (PersistException e) {
+        catch (PersistenceException e) {
             log.throwing("Game History", "persist", e);
         }
     }
@@ -153,7 +152,7 @@ class GameHistory implements PersistContainer {
                 return new GameState.Spot(found.getMoveLocNum());
             }
         }
-        catch (PersistException e) {
+        catch (PersistenceException e) {
             log.throwing("Game History", "get best move", e);
         }
 

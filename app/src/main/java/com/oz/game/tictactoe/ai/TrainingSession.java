@@ -2,6 +2,7 @@ package com.oz.game.tictactoe.ai;
 
 import com.oz.game.tictactoe.core.GameConfig;
 import com.oz.game.tictactoe.core.GameSession;
+import com.oz.game.tictactoe.impl.PersistFacadeImpl;
 
 /**
  * Created by developer on 8/15/15.
@@ -14,26 +15,22 @@ public class TrainingSession {
     }
 
     private void startTraining(final int numOfGames) {
-        try {
-            for (int i = 0; i < numOfGames; i++) {
-                final GameSession gameSession = new GameSession(gameConfig);
+        for (int i = 0; i < numOfGames; i++) {
+            final GameSession gameSession = new GameSession(gameConfig);
 
-                do {
-                    gameSession.play();
-                } while (false == gameSession.isGameOver());
+            do {
+                gameSession.play();
+            } while (false == gameSession.isGameOver());
 
-                if ( numOfGames < 10 || (i % (numOfGames/10)) == 0 ) {
-                    gameSession.logStats();
-                }
+            if ( numOfGames < 10 || (i % (numOfGames/10)) == 0 ) {
+                gameSession.logStats();
             }
-        }
-        finally {
-            GameSession.cleanUp();
         }
     }
 
     public static void main(String[] args) {
         new TrainingSession(new GameConfig()
+                .persistFacade(new PersistFacadeImpl())
                 .playerOne(GameConfig.PlayerType.COMPUTER)
                 .playerTwo(GameConfig.PlayerType.COMPUTER)
                 .printState(true)

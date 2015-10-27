@@ -60,13 +60,13 @@ public class PersistEndpoint {
     }
 
     @ApiMethod(name = "find")
-    public PersistEntry load(final PersistEntry entry) throws PersistException {
+    public PersistBeanEntry load(final PersistBeanEntry entry) throws PersistException {
         try {
             return ofy().load().type(PersistBeanEntry.class)
-                    .filter("x", entry.getStateOfX())
-                    .filter("o", entry.getStateOfO())
-                    .filter("t", entry.getWhoseTurn())
-                    .filter("l", entry.getMoveLocNum())
+                    .filter("x", entry.getX())
+                    .filter("o", entry.getO())
+                    .filter("t", entry.getT())
+                    .filter("l", entry.getL())
                     .first()
                     .now();
         }
@@ -77,12 +77,12 @@ public class PersistEndpoint {
     }
 
     @ApiMethod(name = "findBest")
-    public PersistEntry findMax(final PersistEntry entry) throws PersistException {
+    public PersistBeanEntry findMax(final PersistBeanEntry entry) throws PersistException {
         try {
             return ofy().load().type(PersistBeanEntry.class)
-                    .filter("x", entry.getStateOfX())
-                    .filter("o", entry.getStateOfO())
-                    .filter("t", entry.getWhoseTurn())
+                    .filter("x", entry.getX())
+                    .filter("o", entry.getO())
+                    .filter("t", entry.getT())
                     .order("-w")
                     .first()
                     .now();

@@ -3,6 +3,8 @@ package com.oz.game.tictactoe.ui;
 import com.oz.game.tictactoe.R;
 import com.oz.game.tictactoe.core.GameConfig;
 import com.oz.game.tictactoe.core.GameSession;
+import com.oz.game.tictactoe.core.PersistFacade;
+import com.oz.game.tictactoe.impl.PersistFacadeImpl;
 import com.oz.game.tictactoe.io.GameMove;
 import com.oz.game.tictactoe.io.GameInput;
 import com.oz.game.tictactoe.io.GameOutput;
@@ -156,7 +158,10 @@ public class TicTacToeActivity extends Activity {
             //TODO: Discard previous ??
         }
 
+        //TODO: Update instead of recreate??
+        final PersistFacade gameBackEnd = new PersistFacadeImpl();
         final GameConfig gameConfig = new GameConfig()
+                .persistFacade(gameBackEnd)
                 .playerOne(GameConfig.PlayerType.HUMAN)
                 .playerTwo(GameConfig.PlayerType.COMPUTER)
                 .input(new GameInput() {
