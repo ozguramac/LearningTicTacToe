@@ -1,4 +1,4 @@
-package com.oz.game.tictactoe.core;
+package com.oz.game.tictactoe.core.persist;
 
 /**
  * Created by developer on 10/23/15.

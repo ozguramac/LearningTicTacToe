@@ -9,10 +9,10 @@ import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.oz.game.tictactoe.backend.learningTicTacToeApi.LearningTicTacToeApi;
 import com.oz.game.tictactoe.backend.learningTicTacToeApi.model.PersistBean;
 import com.oz.game.tictactoe.backend.learningTicTacToeApi.model.PersistBeanEntry;
-import com.oz.game.tictactoe.core.PersistContainer;
-import com.oz.game.tictactoe.core.PersistEntry;
-import com.oz.game.tictactoe.core.PersistenceException;
-import com.oz.game.tictactoe.core.PersistFacade;
+import com.oz.game.tictactoe.core.persist.PersistContainer;
+import com.oz.game.tictactoe.core.persist.PersistEntry;
+import com.oz.game.tictactoe.core.persist.PersistenceException;
+import com.oz.game.tictactoe.core.persist.PersistFacade;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -55,22 +55,28 @@ public class PersistFacadeImpl implements PersistFacade {
     public PersistEntry match(final PersistEntry entry) throws PersistenceException {
         try {
             final PersistBeanEntry found = api.find(convert(entry)).execute();
-            return new PersistEntryImpl(found);
+            if (found != null) {
+                return new PersistEntryImpl(found);
+            }
         }
         catch (IOException e) {
             throw new PersistenceException("Failed to match entry", e);
         }
+        return  null;
     }
 
     @Override
     public PersistEntry matchBest(final PersistEntry entry) throws PersistenceException {
         try {
             final PersistBeanEntry found = api.findBest(convert(entry)).execute();
-            return new PersistEntryImpl(found);
+            if (found != null) {
+                return new PersistEntryImpl(found);
+            }
         }
         catch (IOException e) {
             throw new PersistenceException("Failed to find the best matching entry", e);
         }
+        return null;
     }
 
     @Override

@@ -1,10 +1,13 @@
 package com.oz.game.tictactoe.core;
 
+import com.oz.game.tictactoe.core.persist.PersistContainer;
+import com.oz.game.tictactoe.core.persist.PersistEntry;
+import com.oz.game.tictactoe.core.persist.PersistFacade;
+import com.oz.game.tictactoe.core.persist.PersistenceException;
+
 import junit.framework.Assert;
 
-import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -13,7 +16,10 @@ import org.mockito.Mock;
 
 import java.util.Arrays;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -44,29 +50,47 @@ public class TestPersistController {
 
         persistController.save(mockHistory);
 
+        verify(mockPersistFacade).persist(any(PersistContainer.class));
+
+        when(mockPersistFacade.matchBest(any(PersistEntry.class))).thenReturn(entry2);
+
         final GameHistory.Entry foundEntry = persistController.findBest(key);
         Assert.assertEquals("Weight", entry2.getWeight(), foundEntry.getWeight());
 
-        persistController.delete(persistController.find(entry1));
-        persistController.delete(persistController.find(entry2));
-        persistController.delete(persistController.find(entry3));
+        verifyFindDelete(entry1);
+        verifyFindDelete(entry2);
+        verifyFindDelete(entry3);
+    }
+
+    private void verifyFindDelete(GameHistory.Entry entry) throws PersistenceException {
+        when(mockPersistFacade.match(any(PersistEntry.class))).thenReturn(entry);
+
+        final GameHistory.Entry found = persistController.find(entry);
+        verify(mockPersistFacade).match(eq(entry));
+
+        persistController.delete(found);
+        verify(mockPersistFacade).delete(eq(found));
     }
 
     @Test
     public void testNoFind() throws Exception {
         final GameHistory.Key key = new GameHistory.Key(111, 222, 'S');
         Assert.assertNull("Not found", persistController.findBest(key));
+        verify(mockPersistFacade).matchBest(key);
+
         final GameHistory.Entry entry = new GameHistory.Entry(key, 333, 0.000);
         Assert.assertNull("Not found", persistController.find(entry));
+        verify(mockPersistFacade).match(entry);
     }
 
-    @Ignore @Test
+    @Test
     public void testWriteError() throws Exception {
         final GameHistory.Key key = new GameHistory.Key(666, 999, 'Z');
         final GameHistory.Entry e = new GameHistory.Entry(key, 222, 0.664);
 
-        //TODO: Negative test of write error some how??
+        when(mockPersistFacade.match(eq(e))).thenThrow(PersistenceException.class);
+
         thrown.expect(PersistenceException.class);
-        persistController.delete(e);
+        persistController.find(e);
     }
 }

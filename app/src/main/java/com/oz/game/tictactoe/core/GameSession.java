@@ -1,6 +1,6 @@
 package com.oz.game.tictactoe.core;
 
-import com.oz.game.tictactoe.io.GameOutput;
+import com.oz.game.tictactoe.core.io.GameOutput;
 
 import java.text.NumberFormat;
 import java.util.logging.Logger;

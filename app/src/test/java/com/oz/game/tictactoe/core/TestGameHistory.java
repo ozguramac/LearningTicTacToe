@@ -81,6 +81,7 @@ public class TestGameHistory {
         final int locNum = 666;
         final GameHistory.Entry mockFoundEntry = mock(GameHistory.Entry.class);
         when(mockFoundEntry.getMoveLocNum()).thenReturn(locNum);
+        when(mockFoundEntry.getWeight()).thenReturn(0.666);
         when(mockPersistController.findBest(any(GameHistory.Key.class))).thenReturn(mockFoundEntry);
 
         final GameState.GamePiece gp = GameState.GamePiece.O;

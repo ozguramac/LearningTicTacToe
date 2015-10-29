@@ -3,11 +3,11 @@ package com.oz.game.tictactoe.ui;
 import com.oz.game.tictactoe.R;
 import com.oz.game.tictactoe.core.GameConfig;
 import com.oz.game.tictactoe.core.GameSession;
-import com.oz.game.tictactoe.core.PersistFacade;
+import com.oz.game.tictactoe.core.persist.PersistFacade;
 import com.oz.game.tictactoe.impl.PersistFacadeImpl;
-import com.oz.game.tictactoe.io.GameMove;
-import com.oz.game.tictactoe.io.GameInput;
-import com.oz.game.tictactoe.io.GameOutput;
+import com.oz.game.tictactoe.core.io.GameMove;
+import com.oz.game.tictactoe.core.io.GameInput;
+import com.oz.game.tictactoe.core.io.GameOutput;
 import com.oz.game.tictactoe.util.SystemUiHider;
 
 import android.annotation.TargetApi;

@@ -1,7 +1,7 @@
 package com.oz.game.tictactoe.core;
 
-import com.oz.game.tictactoe.io.GameMove;
-import com.oz.game.tictactoe.io.GameOutput;
+import com.oz.game.tictactoe.core.io.GameMove;
+import com.oz.game.tictactoe.core.io.GameOutput;
 
 /**
  * Created by developer on 7/11/15.

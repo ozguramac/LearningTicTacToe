@@ -1,5 +1,9 @@
 package com.oz.game.tictactoe.core;
 
+import com.oz.game.tictactoe.core.persist.PersistContainer;
+import com.oz.game.tictactoe.core.persist.PersistEntry;
+import com.oz.game.tictactoe.core.persist.PersistenceException;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;

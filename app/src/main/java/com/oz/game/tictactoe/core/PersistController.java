@@ -1,5 +1,9 @@
 package com.oz.game.tictactoe.core;
 
+import com.oz.game.tictactoe.core.persist.PersistEntry;
+import com.oz.game.tictactoe.core.persist.PersistFacade;
+import com.oz.game.tictactoe.core.persist.PersistenceException;
+
 import java.util.logging.Logger;
 
 /**
@@ -20,7 +24,10 @@ class PersistController {
 
     GameHistory.Entry find(final GameHistory.Entry entry) throws PersistenceException {
         final PersistEntry fullEntry = facade.match(entry);
-        return new GameHistory.Entry(entry, entry.getMoveLocNum(), fullEntry.getWeight());
+        if (fullEntry != null) {
+            return new GameHistory.Entry(entry, entry.getMoveLocNum(), fullEntry.getWeight());
+        }
+        return null;
     }
 
     GameHistory.Entry findBest(final GameHistory.Key key) throws PersistenceException {

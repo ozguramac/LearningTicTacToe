@@ -1,7 +1,8 @@
 package com.oz.game.tictactoe.core;
 
-import com.oz.game.tictactoe.io.GameInput;
-import com.oz.game.tictactoe.io.GameOutput;
+import com.oz.game.tictactoe.core.io.GameInput;
+import com.oz.game.tictactoe.core.io.GameOutput;
+import com.oz.game.tictactoe.core.persist.PersistFacade;
 
 /**
  * Created by developer on 8/15/15.

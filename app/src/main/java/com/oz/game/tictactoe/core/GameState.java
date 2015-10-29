@@ -2,8 +2,6 @@ package com.oz.game.tictactoe.core;
 
 import android.util.Pair;
 
-import com.oz.game.tictactoe.io.GameMove;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;

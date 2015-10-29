@@ -1,4 +1,4 @@
-package com.oz.game.tictactoe.io;
+package com.oz.game.tictactoe.core.io;
 
 import android.util.Pair;
 
@@ -8,7 +8,7 @@ import android.util.Pair;
 public class GameMove extends Pair<Integer, Integer> {
     private final char piece;
     public GameMove(final char piece, final int i, final int j) {
-        super(i, j);
+        super(Integer.valueOf(i), Integer.valueOf(j));
         this.piece = piece;
     }
 

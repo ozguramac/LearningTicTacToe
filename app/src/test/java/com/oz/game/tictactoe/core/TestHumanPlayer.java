@@ -1,7 +1,7 @@
 package com.oz.game.tictactoe.core;
 
-import com.oz.game.tictactoe.io.GameInput;
-import com.oz.game.tictactoe.io.GameMove;
+import com.oz.game.tictactoe.core.io.GameInput;
+import com.oz.game.tictactoe.core.io.GameMove;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +35,7 @@ public class TestHumanPlayer {
     }
 
     @Test
-    public void testPlay() {
+    public void testPlay() {//TODO: Failing with null pointer (game move pair is not initialized?!)
         player.play(mockState);
 
         verify(mockState).set(eq(gamePiece), eq(someSpot));
