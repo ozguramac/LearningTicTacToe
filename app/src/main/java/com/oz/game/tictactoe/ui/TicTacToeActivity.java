@@ -180,23 +180,23 @@ public class TicTacToeActivity extends Activity {
                     public void onMove(final GameMove gameMove) {
                         //TODO: Need clean up!
                         final int id;
-                        if (gameMove.first == 0 && gameMove.second == 0)
+                        if (gameMove.is(0,0))
                             id = R.id.cell00;
-                        else if (gameMove.first == 0 && gameMove.second == 1)
+                        else if (gameMove.is(0,1))
                             id = R.id.cell01;
-                        else if (gameMove.first == 0 && gameMove.second == 2)
+                        else if (gameMove.is(0,2))
                             id = R.id.cell02;
-                        else if (gameMove.first == 1 && gameMove.second == 0)
+                        else if (gameMove.is(1,0))
                             id = R.id.cell10;
-                        else if (gameMove.first == 1 && gameMove.second == 1)
+                        else if (gameMove.is(1,1))
                             id = R.id.cell11;
-                        else if (gameMove.first == 1 && gameMove.second == 2)
+                        else if (gameMove.is(1,2))
                             id = R.id.cell12;
-                        else if (gameMove.first == 2 && gameMove.second == 0)
+                        else if (gameMove.is(2,0))
                             id = R.id.cell20;
-                        else if (gameMove.first == 2 && gameMove.second == 1)
+                        else if (gameMove.is(2,1))
                             id = R.id.cell21;
-                        else if (gameMove.first == 2 && gameMove.second == 2)
+                        else if (gameMove.is(2,2))
                             id = R.id.cell22;
                         else
                             return;

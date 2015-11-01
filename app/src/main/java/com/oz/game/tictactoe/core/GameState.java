@@ -59,8 +59,8 @@ class GameState {
             return (i*DIM + j);
         }
 
-        Pair<Integer,Integer> toPair() {
-            return Pair.create(i, j);
+        List<Integer> toCoordinates() {
+            return Collections.unmodifiableList(Arrays.asList(i,j));
         }
 
         @Override

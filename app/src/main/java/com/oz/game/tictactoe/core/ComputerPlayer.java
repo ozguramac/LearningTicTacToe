@@ -20,7 +20,7 @@ class ComputerPlayer extends Player {
         final GameState.Spot spot = state.getHistory().getBestMove(state, gp);
         state.set(gp, spot);
         if (io != null) {
-            io.onMove(new GameMove(getGamePiece().toChar(), spot.toPair()));
+            io.onMove(new GameMove(getGamePiece().toChar(), spot.toCoordinates()));
         }
     }
 }
