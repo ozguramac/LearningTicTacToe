@@ -1,9 +1,15 @@
 package com.oz.game.tictactoe.ui;
 
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
+import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
+import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
 import com.oz.game.tictactoe.R;
+import com.oz.game.tictactoe.backend.learningTicTacToeApi.LearningTicTacToeApi;
 import com.oz.game.tictactoe.core.GameConfig;
 import com.oz.game.tictactoe.core.GameSession;
 import com.oz.game.tictactoe.core.persist.PersistFacade;
+import com.oz.game.tictactoe.impl.PersistFacadeBase;
 import com.oz.game.tictactoe.impl.PersistFacadeImpl;
 import com.oz.game.tictactoe.core.io.GameMove;
 import com.oz.game.tictactoe.core.io.GameInput;
@@ -18,6 +24,9 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
+import java.io.IOException;
 
 
 /**
@@ -153,13 +162,36 @@ public class TicTacToeActivity extends Activity {
     private GameSession gameSession = null;
     private GameMove lastPlayed = null;
 
+    private final LearningTicTacToeApi.Builder apiBuilder = new LearningTicTacToeApi.Builder(
+            AndroidHttp.newCompatibleTransport()
+            ,new AndroidJsonFactory()
+            ,null)
+            .setRootUrl("http://10.0.2.2:8080/_ah/api")
+            .setGoogleClientRequestInitializer(new GoogleClientRequestInitializer() {
+                @Override
+                public void initialize(AbstractGoogleClientRequest<?> gcr) throws IOException {
+                    gcr.setDisableGZipContent(true);
+                }
+            });
+    private LearningTicTacToeApi api = null;
+
+    private final PersistFacade gameBackEnd = new PersistFacadeBase() {
+        @Override
+        protected LearningTicTacToeApi getApi() {
+            return api;
+        }
+    };
+
     public void resetGame(final View v) {
         if (gameSession != null) {
             //TODO: Discard previous ??
         }
 
-        //TODO: Update instead of recreate??
-        final PersistFacade gameBackEnd = new PersistFacadeImpl();
+        if (null == api) {//lazy load
+            api = apiBuilder.build();
+        }
+
+
         final GameConfig gameConfig = new GameConfig()
                 .persistFacade(gameBackEnd)
                 .playerOne(GameConfig.PlayerType.HUMAN)
@@ -211,7 +243,8 @@ public class TicTacToeActivity extends Activity {
 
                     @Override
                     public void onGameOver(char winner) {
-                        //TODO: Set game over text
+                        final TextView outcome = (TextView) findViewById(R.id.victory);
+                        outcome.setText("The winner is "+winner);
                     }
                 });
         gameSession = new GameSession(gameConfig);

@@ -1,7 +1,6 @@
 package com.oz.game.tictactoe.core;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,8 +42,8 @@ public class TestGameHistory {
         Assert.assertEquals(key.getStateOfX(), e.getStateOfX());
         Assert.assertEquals(key.getStateOfO(), e.getStateOfO());
         Assert.assertEquals(key.getWhoseTurn(), e.getWhoseTurn());
-        Assert.assertEquals(l, e.getMoveLocNum());
-        Assert.assertEquals(w, e.getWeight());
+        Assert.assertEquals(l, e.getMoveLocNum().intValue());
+        Assert.assertEquals(w, e.getWeight().doubleValue(), 0);
     }
 
     @Test
@@ -58,7 +57,7 @@ public class TestGameHistory {
 
         for (GameHistory.Entry entry : history.getEntries()) {
             Assert.assertEquals("Game piece", gp.toChar(), entry.getWhoseTurn());
-            Assert.assertEquals("Spot", spot.toNum(), entry.getMoveLocNum());
+            Assert.assertEquals("Spot", spot.toNum(), entry.getMoveLocNum().intValue());
         }
     }
 
@@ -111,7 +110,7 @@ public class TestGameHistory {
         verify(mockPersistController).save(eq(history));
 
         for (GameHistory.Entry entry : history.getEntries()) {
-            Assert.assertEquals("Weight", 0.5, entry.getWeight());
+            Assert.assertEquals("Weight", 0.5, entry.getWeight().doubleValue(), 0);
         }
     }
 
@@ -132,10 +131,10 @@ public class TestGameHistory {
 
         for (GameHistory.Entry entry : history.getEntries()) {
             if (entry.getWhoseTurn() == winner.toChar()) {
-                Assert.assertEquals("Weight", 0.75, entry.getWeight());
+                Assert.assertEquals("Weight", 0.75, entry.getWeight().doubleValue(), 0);
             }
             else {
-                Assert.assertEquals("Weight", 0.25, entry.getWeight());
+                Assert.assertEquals("Weight", 0.25, entry.getWeight().doubleValue(), 0);
             }
         }
     }

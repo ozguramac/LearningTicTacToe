@@ -10,7 +10,7 @@ public interface PersistEntry {
 
     char getWhoseTurn();
 
-    int getMoveLocNum();
+    Integer getMoveLocNum();
 
-    double getWeight();
+    Double getWeight();
 }

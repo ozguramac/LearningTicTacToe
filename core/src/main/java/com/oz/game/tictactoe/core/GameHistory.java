@@ -49,12 +49,12 @@ class GameHistory implements PersistContainer {
             return t;
         }
 
-        public int getMoveLocNum() {
-            throw new UnsupportedOperationException();
+        public Integer getMoveLocNum() {
+            return null;
         }
 
-        public double getWeight() {
-            throw new UnsupportedOperationException();
+        public Double getWeight() {
+            return null;
         }
     }
 
@@ -95,12 +95,12 @@ class GameHistory implements PersistContainer {
         private void tie() { w = (w + 0.5) / 2.0; }
 
         @Override
-        public int getMoveLocNum() {
+        public Integer getMoveLocNum() {
             return l;
         }
 
         @Override
-        public double getWeight() {
+        public Double getWeight() {
             return w;
         }
     }

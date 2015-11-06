@@ -12,6 +12,7 @@ import com.google.api.server.spi.config.ApiNamespace;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 
+import java.io.Closeable;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -39,19 +40,25 @@ public class PersistEndpoint {
     @ApiMethod(name = "save")
     public PersistBean save(final PersistBean persistBean) throws PersistException {
         try {
-            final Map<Key<PersistBeanEntry>, PersistBeanEntry> map = ofy().save()
-                    .entities(persistBean.getEntries())
-                    .now();
+            final Closeable c = ObjectifyService.begin();
+            try {
+                final Map<Key<PersistBeanEntry>, PersistBeanEntry> map = ofy().save()
+                        .entities(persistBean.getEntries())
+                        .now();
 
-            for (Map.Entry<Key<PersistBeanEntry>, PersistBeanEntry> e : map.entrySet()) {
-                for (PersistBeanEntry pe : persistBean.getEntries()) {
-                    if (e.getValue() == pe) {
-                        pe.setDbId(e.getKey().getId());
+                for (Map.Entry<Key<PersistBeanEntry>, PersistBeanEntry> e : map.entrySet()) {
+                    for (PersistBeanEntry pe : persistBean.getEntries()) {
+                        if (e.getValue() == pe) {
+                            pe.setDbId(e.getKey().getId());
+                        }
                     }
                 }
-            }
 
-            return persistBean;
+                return persistBean;
+            }
+            finally {
+                c.close();
+            }
         }
         catch (Throwable t) {
             log.throwing(getClass().getName(), "save", t);
@@ -62,13 +69,19 @@ public class PersistEndpoint {
     @ApiMethod(name = "find")
     public PersistBeanEntry load(final PersistBeanEntry entry) throws PersistException {
         try {
-            return ofy().load().type(PersistBeanEntry.class)
-                    .filter("x", entry.getX())
-                    .filter("o", entry.getO())
-                    .filter("t", entry.getT())
-                    .filter("l", entry.getL())
-                    .first()
-                    .now();
+            final Closeable c = ObjectifyService.begin();
+            try {
+                return ofy().load().type(PersistBeanEntry.class)
+                        .filter("x", entry.getX())
+                        .filter("o", entry.getO())
+                        .filter("t", entry.getT())
+                        .filter("l", entry.getL())
+                        .first()
+                        .now();
+            }
+            finally {
+                c.close();
+            }
         }
         catch (Throwable t) {
             log.throwing(getClass().getName(), "load", t);
@@ -79,13 +92,19 @@ public class PersistEndpoint {
     @ApiMethod(name = "findBest")
     public PersistBeanEntry findMax(final PersistBeanEntry entry) throws PersistException {
         try {
-            return ofy().load().type(PersistBeanEntry.class)
-                    .filter("x", entry.getX())
-                    .filter("o", entry.getO())
-                    .filter("t", entry.getT())
-                    .order("-w")
-                    .first()
-                    .now();
+            final Closeable c = ObjectifyService.begin();
+            try {
+                return ofy().load().type(PersistBeanEntry.class)
+                        .filter("x", entry.getX())
+                        .filter("o", entry.getO())
+                        .filter("t", entry.getT())
+                        .order("-w")
+                        .first()
+                        .now();
+            }
+            finally {
+                c.close();
+            }
         }
         catch (Throwable t) {
             log.throwing(getClass().getName(), "findMax", t);
@@ -96,9 +115,15 @@ public class PersistEndpoint {
     @ApiMethod(name = "delete")
     public void remove(final PersistBeanEntry entry) throws PersistException {
         try {
-            ofy().delete()
-                    .entity(entry)
-                    .now();
+            final Closeable c = ObjectifyService.begin();
+            try {
+                ofy().delete()
+                        .entity(entry)
+                        .now();
+            }
+            finally {
+                c.close();
+            }
         }
         catch (Throwable t) {
             log.throwing(getClass().getName(), "remove", t);

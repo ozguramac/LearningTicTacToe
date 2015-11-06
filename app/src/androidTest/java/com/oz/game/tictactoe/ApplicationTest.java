@@ -3,6 +3,9 @@ package com.oz.game.tictactoe;
 import android.app.Application;
 import android.test.ApplicationTestCase;
 
+import com.oz.game.tictactoe.core.persist.PersistFacade;
+import com.oz.game.tictactoe.impl.PersistFacadeImpl;
+
 import junit.framework.Assert;
 
 import java.lang.Exception;
@@ -16,6 +19,7 @@ public class ApplicationTest extends ApplicationTestCase<Application> {
     }
 
     public final void test() throws Exception {
-        //TODO
+        //TODO...
+        System.out.println("So far so good!");
     }
 }

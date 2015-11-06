@@ -23,21 +23,17 @@ public class TestPersistEndpoint {
     );
 
     private PersistEndpoint endpoint;
-    private Closeable ofySession;
 
     @Before
     public void setUp() throws Exception {
         endpoint = new PersistEndpoint();
-        ofySession = ObjectifyService.begin();
         helper.setUp();
     }
 
     @After
     public void tearDown() throws Exception {
-        ofySession.close();
         helper.tearDown();
         endpoint = null;
-        ofySession = null;
     }
 
     @Test

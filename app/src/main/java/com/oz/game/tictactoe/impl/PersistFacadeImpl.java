@@ -21,8 +21,8 @@ import java.util.List;
 /**
  * Created by developer on 10/23/15.
  */
-public class PersistFacadeImpl implements PersistFacade {
-    private final LearningTicTacToeApi api = new LearningTicTacToeApi.Builder(
+public final class PersistFacadeImpl extends PersistFacadeBase {
+        private final LearningTicTacToeApi api = new LearningTicTacToeApi.Builder(
              AndroidHttp.newCompatibleTransport()
             ,new AndroidJsonFactory()
             ,null)
@@ -36,99 +36,7 @@ public class PersistFacadeImpl implements PersistFacade {
             .build();
 
     @Override
-    public void persist(final PersistContainer persistContainer) throws PersistenceException {
-        final PersistBean content = new PersistBean();
-        final List<PersistBeanEntry> entries = new LinkedList<>();
-        for (PersistEntry pe: persistContainer.getEntries()) {
-            entries.add(convert(pe));
-        }
-        content.setEntries(entries);
-        try {
-            api.save(content).execute();
-        }
-        catch (IOException e) {
-            throw new PersistenceException("Failed to persist entry", e);
-        }
-    }
-
-    @Override
-    public PersistEntry match(final PersistEntry entry) throws PersistenceException {
-        try {
-            final PersistBeanEntry found = api.find(convert(entry)).execute();
-            if (found != null) {
-                return new PersistEntryImpl(found);
-            }
-        }
-        catch (IOException e) {
-            throw new PersistenceException("Failed to match entry", e);
-        }
-        return  null;
-    }
-
-    @Override
-    public PersistEntry matchBest(final PersistEntry entry) throws PersistenceException {
-        try {
-            final PersistBeanEntry found = api.findBest(convert(entry)).execute();
-            if (found != null) {
-                return new PersistEntryImpl(found);
-            }
-        }
-        catch (IOException e) {
-            throw new PersistenceException("Failed to find the best matching entry", e);
-        }
-        return null;
-    }
-
-    @Override
-    public void delete(final PersistEntry entry) throws PersistenceException {
-        try {
-            api.delete(convert(entry)).execute();
-        }
-        catch (IOException e) {
-            throw new PersistenceException("Failed to delete entry", e);
-        }
-    }
-
-    @NonNull
-    private static PersistBeanEntry convert(final PersistEntry pe) {
-        final PersistBeanEntry entry = new PersistBeanEntry();
-        entry.setX(pe.getStateOfX());
-        entry.setO(pe.getStateOfO());
-        entry.setT((int) pe.getWhoseTurn());
-        entry.setL(pe.getMoveLocNum());
-        entry.setW(pe.getWeight());
-        return entry;
-    }
-
-    private static class PersistEntryImpl implements PersistEntry {
-        private final PersistBeanEntry pbe;
-        PersistEntryImpl(final PersistBeanEntry pbe) {
-            this.pbe = pbe;
-        }
-
-        @Override
-        public int getStateOfX() {
-            return pbe.getX();
-        }
-
-        @Override
-        public int getStateOfO() {
-            return pbe.getO();
-        }
-
-        @Override
-        public char getWhoseTurn() {
-            return (char) pbe.getT().intValue();
-        }
-
-        @Override
-        public int getMoveLocNum() {
-            return pbe.getL();
-        }
-
-        @Override
-        public double getWeight() {
-            return pbe.getW();
-        }
+    protected LearningTicTacToeApi getApi() {
+        return api;
     }
 }
