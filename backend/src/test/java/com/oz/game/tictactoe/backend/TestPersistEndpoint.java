@@ -80,6 +80,25 @@ public class TestPersistEndpoint {
         Assert.assertNull(endpoint.load(pe));
     }
 
+    @Test(expected = PersistException.class)
+    public void testNegativeSave() throws Exception {
+        endpoint.save(null);
+    }
+    @Test(expected = PersistException.class)
+    public void testNegativeLoad() throws Exception {
+        endpoint.load(null);
+    }
+
+    @Test(expected = PersistException.class)
+    public void testNegativeFind() throws Exception {
+        endpoint.findMax(null);
+    }
+
+    @Test(expected = PersistException.class)
+    public void testNegativeRemove() throws Exception {
+        endpoint.remove(null);
+    }
+
     private PersistBean save() throws PersistException {
         final PersistBeanEntry pe0 = new PersistBeanEntry();
         pe0.setO(666);

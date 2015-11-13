@@ -55,9 +55,6 @@ public class GameSession {
     }
 
     public void play() {
-        //
-        //TODO: CANNOT PROCEED: HAVE SEVERAL TEST FAILS!!
-        //
         if (isGameOver()) {
             return;
         }

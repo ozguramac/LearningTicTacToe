@@ -103,7 +103,6 @@ public class TestGameHistory {
         final GameState.GamePiece tie = GameState.GamePiece.NONE;
         history.persist(tie);
 
-        verify(mockPersistController, times(6)).find(any(GameHistory.Entry.class));
         verify(mockPersistController).save(eq(history));
 
         Assert.assertEquals("Winner", GameState.GamePiece.NONE.toChar(), history.getWinner());

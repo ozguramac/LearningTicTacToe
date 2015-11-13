@@ -7,7 +7,7 @@ import java.util.Arrays;
  */
 public class PersistBean {
     private PersistBeanEntry[] entries = null;
-    private Integer winner = null;
+    private int winner = (int)' ';
 
     public PersistBeanEntry[] getEntries() {
         return entries;
@@ -21,7 +21,7 @@ public class PersistBean {
         return winner;
     }
 
-    public void setWinner(Integer winner) {
+    public void setWinner(int winner) {
         this.winner = winner;
     }
 
@@ -29,11 +29,11 @@ public class PersistBean {
     public String toString() {
         final StringBuilder sb = new StringBuilder("PersistBean{");
         sb.append("entries=").append(Arrays.toString(entries));
-        if (null == winner) {
+        if (Character.isSpaceChar(winner)) {
             sb.append(",tie");
         }
         else {
-            sb.append(",winner=").append((char) winner.intValue());
+            sb.append(",winner=").append((char) winner);
         }
         sb.append('}');
         return sb.toString();
