@@ -35,15 +35,13 @@ public class TestGameHistory {
         final GameHistory.Key key = new GameHistory.Key(666, 999, 'O');
 
         final int l = 333;
-        final double w = 0.666;
 
-        final GameHistory.Entry e = new GameHistory.Entry(key, l, w);
+        final GameHistory.Entry e = new GameHistory.Entry(key, l);
 
         Assert.assertEquals(key.getStateOfX(), e.getStateOfX());
         Assert.assertEquals(key.getStateOfO(), e.getStateOfO());
         Assert.assertEquals(key.getWhoseTurn(), e.getWhoseTurn());
         Assert.assertEquals(l, e.getMoveLocNum().intValue());
-        Assert.assertEquals(w, e.getWeight().doubleValue(), 0);
     }
 
     @Test
@@ -80,7 +78,6 @@ public class TestGameHistory {
         final int locNum = 666;
         final GameHistory.Entry mockFoundEntry = mock(GameHistory.Entry.class);
         when(mockFoundEntry.getMoveLocNum()).thenReturn(locNum);
-        when(mockFoundEntry.getWeight()).thenReturn(0.666);
         when(mockPersistController.findBest(any(GameHistory.Key.class))).thenReturn(mockFoundEntry);
 
         final GameState.GamePiece gp = GameState.GamePiece.O;
@@ -109,9 +106,7 @@ public class TestGameHistory {
         verify(mockPersistController, times(6)).find(any(GameHistory.Entry.class));
         verify(mockPersistController).save(eq(history));
 
-        for (GameHistory.Entry entry : history.getEntries()) {
-            Assert.assertEquals("Weight", 0.5, entry.getWeight().doubleValue(), 0);
-        }
+        Assert.assertEquals("Winner", GameState.GamePiece.NONE.toChar(), history.getWinner());
     }
 
     @Test
@@ -129,14 +124,7 @@ public class TestGameHistory {
 
         verify(mockPersistController).save(eq(history));
 
-        for (GameHistory.Entry entry : history.getEntries()) {
-            if (entry.getWhoseTurn() == winner.toChar()) {
-                Assert.assertEquals("Weight", 0.75, entry.getWeight().doubleValue(), 0);
-            }
-            else {
-                Assert.assertEquals("Weight", 0.25, entry.getWeight().doubleValue(), 0);
-            }
-        }
+        Assert.assertEquals("Winner", GameState.GamePiece.X.toChar(), history.getWinner());
     }
 
     //TODO: Negative testing...

@@ -11,6 +11,4 @@ public interface PersistEntry {
     char getWhoseTurn();
 
     Integer getMoveLocNum();
-
-    Double getWeight();
 }

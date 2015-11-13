@@ -2,6 +2,7 @@ package com.oz.game.tictactoe.backend;
 
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
+import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Index;
 import com.googlecode.objectify.condition.IfNotDefault;
 
@@ -27,7 +28,7 @@ public class PersistBeanEntry {
     private int l = -1;
     //Weight of winning possibility
     @Index(IfNotDefault.class)
-    private double w = Double.NaN;
+    private double w = 0.5; //probable either way by default
 
     public Long getDbId() {
         return dbId;
@@ -65,17 +66,26 @@ public class PersistBeanEntry {
         return l;
     }
 
-    public double getW() {
-        return w;
-    }
-
     public void setL(int l) {
         this.l = l;
     }
 
-    public void setW(double w) {
+    double getW() {
+        return w;
+    }
+
+    void setW(double w) {
         this.w = w;
     }
+
+    //TODO: Refactor weight modification to support other algorithms
+    void winner() {
+        w = (w + 1.0) / 2.0;
+    }
+
+    void loser() { w /= 2.0; }
+
+    void tie() { w = (w + 0.5) / 2.0; }
 
     @Override
     public String toString() {

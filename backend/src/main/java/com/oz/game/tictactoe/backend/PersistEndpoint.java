@@ -42,6 +42,28 @@ public class PersistEndpoint {
         try {
             final Closeable c = ObjectifyService.begin();
             try {
+                final PersistBeanEntry[] entries = persistBean.getEntries();
+                for (PersistBeanEntry entry : entries) {
+                    //Pull from db
+                    final PersistBeanEntry fullEntry;
+                    if ((fullEntry = load(entry)) != null) {
+                        entry.setW(fullEntry.getW());
+                    }
+
+                    //Update weight
+                    final int winner = persistBean.getWinner();
+                    if (Character.isSpaceChar(winner)) {
+                        entry.tie();
+                    }
+                    else if (winner == entry.getT()) {
+                        entry.winner();
+                    }
+                    else {
+                        entry.loser();
+                    }
+                }
+
+
                 final Map<Key<PersistBeanEntry>, PersistBeanEntry> map = ofy().save()
                         .entities(persistBean.getEntries())
                         .now();
@@ -98,6 +120,7 @@ public class PersistEndpoint {
                         .filter("x", entry.getX())
                         .filter("o", entry.getO())
                         .filter("t", entry.getT())
+                        .filter("w >", 0.5) //Filter for better than 50-50 prob!
                         .order("-w")
                         .first()
                         .now();

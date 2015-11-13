@@ -24,6 +24,7 @@ public abstract class PersistFacadeBase implements PersistFacade {
     @Override
     public void persist(final PersistContainer persistContainer) throws PersistenceException {
         final PersistBean content = new PersistBean();
+        content.setWinner((int)persistContainer.getWinner());
         final List<PersistBeanEntry> entries = new LinkedList<>();
         for (PersistEntry pe: persistContainer.getEntries()) {
             entries.add(convert(pe));
@@ -82,7 +83,6 @@ public abstract class PersistFacadeBase implements PersistFacade {
         entry.setO(pe.getStateOfO());
         entry.setT((int) pe.getWhoseTurn());
         entry.setL(pe.getMoveLocNum());
-        entry.setW(pe.getWeight());
         return entry;
     }
 
@@ -110,11 +110,6 @@ public abstract class PersistFacadeBase implements PersistFacade {
         @Override
         public Integer getMoveLocNum() {
             return pbe.getL();
-        }
-
-        @Override
-        public Double getWeight() {
-            return pbe.getW();
         }
     }
 }

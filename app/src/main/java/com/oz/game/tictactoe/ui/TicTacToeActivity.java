@@ -162,6 +162,7 @@ public class TicTacToeActivity extends Activity {
 
     private GameSession gameSession = null;
     private GameMove lastPlayed = null;
+    private String outcomeText = null; //TODO: horrible!
     private Object lock = new Object(); //TODO: ugly!!!
 
     private final LearningTicTacToeApi.Builder apiBuilder = new LearningTicTacToeApi.Builder(
@@ -200,42 +201,16 @@ public class TicTacToeActivity extends Activity {
             .output(new GameOutput() {
                 @Override
                 public void onMove(final GameMove gameMove) {
-                    //TODO: Need clean up!
-                    final int id;
-                    if (gameMove.is(0,0))
-                        id = R.id.cell00;
-                    else if (gameMove.is(0,1))
-                        id = R.id.cell01;
-                    else if (gameMove.is(0,2))
-                        id = R.id.cell02;
-                    else if (gameMove.is(1,0))
-                        id = R.id.cell10;
-                    else if (gameMove.is(1,1))
-                        id = R.id.cell11;
-                    else if (gameMove.is(1,2))
-                        id = R.id.cell12;
-                    else if (gameMove.is(2,0))
-                        id = R.id.cell20;
-                    else if (gameMove.is(2,1))
-                        id = R.id.cell21;
-                    else if (gameMove.is(2,2))
-                        id = R.id.cell22;
-                    else
-                        return;
-
-                    final Button button = (Button) findViewById(id);
-                    if (button.getText().equals("")) {
-                        //TODO: Not allowing update of UI from another thread!!
-                        button.setText(String.valueOf(gameMove.getPiece()));
-                    } else {
-                        throw new RuntimeException("TODO: What the hell??");
+                    synchronized (lock) {
+                        lastPlayed = gameMove;
                     }
                 }
 
                 @Override
                 public void onGameOver(char winner) {
-                    final TextView outcome = (TextView) findViewById(R.id.victory);
-                    outcome.setText("The winner is "+winner);
+                    synchronized (lock) {
+                        outcomeText = "The winner is " + winner;
+                    }
                 }
             });
 
@@ -313,6 +288,57 @@ public class TicTacToeActivity extends Activity {
                 gameSession.play(); //human play
                 gameSession.play(); //computer play
                 return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+
+                if (lastPlayed != null) {
+                    synchronized (lock) {
+                        //TODO: Refactor: Odd logic to set to null here!
+                        final GameMove gameMove = lastPlayed;
+                        lastPlayed = null;
+
+                        //TODO: Need clean up!
+                        final int id;
+                        if (gameMove.is(0, 0))
+                            id = R.id.cell00;
+                        else if (gameMove.is(0, 1))
+                            id = R.id.cell01;
+                        else if (gameMove.is(0, 2))
+                            id = R.id.cell02;
+                        else if (gameMove.is(1, 0))
+                            id = R.id.cell10;
+                        else if (gameMove.is(1, 1))
+                            id = R.id.cell11;
+                        else if (gameMove.is(1, 2))
+                            id = R.id.cell12;
+                        else if (gameMove.is(2, 0))
+                            id = R.id.cell20;
+                        else if (gameMove.is(2, 1))
+                            id = R.id.cell21;
+                        else if (gameMove.is(2, 2))
+                            id = R.id.cell22;
+                        else
+                            return;
+
+                        final Button button = (Button) findViewById(id);
+                        if (button.getText().equals("")) {
+                            button.setText(String.valueOf(gameMove.getPiece()));
+                        } else {
+                            throw new RuntimeException("TODO: What the hell??");
+                        }
+                    }
+                }
+
+                if (outcomeText != null) {
+                    final TextView outcome = (TextView) findViewById(R.id.victory);
+                    synchronized (lock) {
+                        outcome.setText(outcomeText);
+                    }
+                }
+
             }
         }.execute();
     }

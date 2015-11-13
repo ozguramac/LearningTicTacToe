@@ -42,9 +42,9 @@ public class TestPersistController {
     public void testFindMax() throws Exception {
         final GameHistory.Key key = new GameHistory.Key(666, 999, 'Z');
 
-        final GameHistory.Entry entry1 = new GameHistory.Entry(key, 222, 0.664);
-        final GameHistory.Entry entry2 = new GameHistory.Entry(key, 333, 0.666);
-        final GameHistory.Entry entry3 = new GameHistory.Entry(key, 111, 0.564);
+        final GameHistory.Entry entry1 = new GameHistory.Entry(key, 222);
+        final GameHistory.Entry entry2 = new GameHistory.Entry(key, 333);
+        final GameHistory.Entry entry3 = new GameHistory.Entry(key, 111);
 
         when(mockHistory.getEntries()).thenReturn(Arrays.asList(entry1, entry2, entry3));
 
@@ -55,7 +55,7 @@ public class TestPersistController {
         when(mockPersistFacade.matchBest(any(PersistEntry.class))).thenReturn(entry2);
 
         final GameHistory.Entry foundEntry = persistController.findBest(key);
-        Assert.assertEquals("Weight", entry2.getWeight(), foundEntry.getWeight());
+        Assert.assertEquals("Move location", entry2.getMoveLocNum(), foundEntry.getMoveLocNum());
 
         verifyFindDelete(entry1);
         verifyFindDelete(entry2);
@@ -78,7 +78,7 @@ public class TestPersistController {
         Assert.assertNull("Not found", persistController.findBest(key));
         verify(mockPersistFacade).matchBest(key);
 
-        final GameHistory.Entry entry = new GameHistory.Entry(key, 333, 0.000);
+        final GameHistory.Entry entry = new GameHistory.Entry(key, 333);
         Assert.assertNull("Not found", persistController.find(entry));
         verify(mockPersistFacade).match(entry);
     }
@@ -86,7 +86,7 @@ public class TestPersistController {
     @Test
     public void testWriteError() throws Exception {
         final GameHistory.Key key = new GameHistory.Key(666, 999, 'Z');
-        final GameHistory.Entry e = new GameHistory.Entry(key, 222, 0.664);
+        final GameHistory.Entry e = new GameHistory.Entry(key, 222);
 
         when(mockPersistFacade.match(eq(e))).thenThrow(PersistenceException.class);
 
