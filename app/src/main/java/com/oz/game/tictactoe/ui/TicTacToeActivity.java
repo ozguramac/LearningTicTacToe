@@ -53,7 +53,7 @@ public class TicTacToeActivity extends Activity {
      * If set, will toggle the system UI visibility upon interaction. Otherwise,
      * will show the system UI visibility upon interaction.
      */
-    private static final boolean TOGGLE_ON_CLICK = true;
+    private static final boolean TOGGLE_ON_CLICK = false;
 
     /**
      * The flags to pass to {@link SystemUiHider#getInstance}.
@@ -215,6 +215,33 @@ public class TicTacToeActivity extends Activity {
             });
 
     public void resetGame(final View v) {
+        resetSession();
+
+        //TODO: Refactor cell id handling
+        final int[] buttonIds = {
+                R.id.cell00
+                , R.id.cell01
+                , R.id.cell02
+                , R.id.cell10
+                , R.id.cell11
+                , R.id.cell12
+                , R.id.cell20
+                , R.id.cell21
+                , R.id.cell22
+        };
+
+        synchronized (lock) {
+            for (int id : buttonIds) {
+                final Button button = (Button) findViewById(id);
+                button.setText("");
+            }
+
+            final TextView outcome = (TextView) findViewById(R.id.victory);
+            outcome.setText("");
+        }
+    }
+
+    private void resetSession() {
         if (gameSession != null) {
             //TODO: Discard previous ??
         }
@@ -278,7 +305,7 @@ public class TicTacToeActivity extends Activity {
         }
 
         if (null == gameSession) {
-            resetGame(null); //TODO: Do this more elegantly
+            resetSession(); //TODO: Do this more elegantly
         }
 
         //TODO: Refactor and automate computer play call
@@ -336,6 +363,7 @@ public class TicTacToeActivity extends Activity {
                     final TextView outcome = (TextView) findViewById(R.id.victory);
                     synchronized (lock) {
                         outcome.setText(outcomeText);
+                        outcomeText = null; //TODO: There must be a better way!
                     }
                 }
 
