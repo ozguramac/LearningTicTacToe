@@ -101,6 +101,8 @@ public class GameSession {
             percFmt.setMinimumFractionDigits(4);
             log.info("Best move find rate => "
                     + percFmt.format(percOfBestMoveFinds));
+            log.info("Exploratory move rate => "
+                    + percFmt.format(state.getHistory().getPercOfExploratoryMoves()));
         }
     }
 }

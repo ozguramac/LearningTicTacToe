@@ -22,6 +22,7 @@ class GameHistory implements PersistContainer {
 
     private GameState.GamePiece winner = GameState.GamePiece.NONE;
     private int numBestMoveFinds = 0;
+    private int numOfExplorations = 0;
 
     static class Key implements PersistEntry {
         private final int x; //state of X
@@ -107,22 +108,29 @@ class GameHistory implements PersistContainer {
     }
 
     GameState.Spot getBestMove(final GameState state, final GameState.GamePiece gp) {
-        //Find best move from history
-        final Key key = new Key(state, gp);
-        try {
-            final Entry found = persistController.findBest(key);
-            if (found != null) {
-                numBestMoveFinds++;
-                return new GameState.Spot(found.getMoveLocNum());
+        final Random random = new Random(System.currentTimeMillis());
+
+        //Exploratory possibility of reinforcement learning:
+        //Only do greedy lookup half of the time to explore new possibilities
+        if (random.nextBoolean()) {
+            //Find best move from history
+            final Key key = new Key(state, gp);
+            try {
+                final Entry found = persistController.findBest(key);
+                if (found != null) {
+                    numBestMoveFinds++;
+                    return new GameState.Spot(found.getMoveLocNum());
+                }
+            } catch (PersistenceException e) {
+                log.throwing("Game History", "get best move", e);
             }
         }
-        catch (PersistenceException e) {
-            log.throwing("Game History", "get best move", e);
+        else {
+            numOfExplorations++;
         }
 
         //Else randomly choose from empty spots
         final List<GameState.Spot> empties = state.getEmptySpots();
-        final Random random = new Random(System.currentTimeMillis());
         final int randSpotIdx = random.nextInt(empties.size());
         final GameState.Spot spot = empties.get(randSpotIdx);
         return spot;
@@ -131,4 +139,6 @@ class GameHistory implements PersistContainer {
     double getPercOfBestMoveFinds() {
         return numBestMoveFinds / ((double) entries.size());
     }
+
+    double getPercOfExploratoryMoves() { return numOfExplorations / ((double) entries.size()); }
 }
