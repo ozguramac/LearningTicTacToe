@@ -33,14 +33,17 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true" />
 
-            <TextView
+            <Switch
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:text="X Player"
-                android:id="@+id/userLabel"
-                android:layout_alignParentRight="true" />
+                android:id="@+id/gamePieceSwitch"
+                android:layout_alignParentRight="true"
+                android:textOff="X"
+                android:textOn="O"
+                android:text="Play with"
+                android:onClick="resetGame"
+                android:enabled="true"
+                android:layout_centerVertical="true" />
 
         </RelativeLayout>
 

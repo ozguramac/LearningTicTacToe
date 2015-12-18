@@ -25,6 +25,7 @@ import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -161,6 +162,7 @@ public class TicTacToeActivity extends Activity {
     }
 
     private GameSession gameSession = null;
+    private char gamePiece = ' ';
     private GameMove lastPlayed = null;
     private String outcomeText = null; //TODO: horrible!
     private Object lock = new Object(); //TODO: ugly!!!
@@ -250,11 +252,38 @@ public class TicTacToeActivity extends Activity {
             api = apiBuilder.build();
         }
 
-        //TODO: Give option to user
-        gameConfig.playerOne(GameConfig.PlayerType.HUMAN)
-                .playerTwo(GameConfig.PlayerType.COMPUTER);
+        final Switch gpSwitch = (Switch)findViewById(R.id.gamePieceSwitch);
+        if (gpSwitch.isChecked()) {
+            gamePiece = gpSwitch.getTextOn().charAt(0);
+            gameConfig.playerOne(GameConfig.PlayerType.COMPUTER)
+                    .playerTwo(GameConfig.PlayerType.HUMAN);
+        }
+        else {
+            gamePiece = gpSwitch.getTextOff().charAt(0);
+            gameConfig.playerOne(GameConfig.PlayerType.HUMAN)
+                    .playerTwo(GameConfig.PlayerType.COMPUTER);
+        }
 
         gameSession = new GameSession(gameConfig);
+
+        if (gameConfig.getPlayerOne() == GameConfig.PlayerType.COMPUTER)
+        {//Computer plays first move
+            new AsyncTask<Void, Void, Void>() {
+                @Override
+                protected Void doInBackground(Void... params) {
+                    gameSession.play(); //computer play
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    super.onPostExecute(aVoid);
+
+                    displayLastPlayed();
+
+                }
+            }.execute();
+        }
     }
 
     public void playCell(final View v) {
@@ -264,48 +293,47 @@ public class TicTacToeActivity extends Activity {
             return;
         }
 
+        if (null == gameSession) {
+            resetSession(); //TODO: Do this more elegantly
+        }
+
         synchronized (lock) {
             if (null == lastPlayed) {
-                final char piece = 'X'; //TODO: get from session
-                button.setText(String.valueOf(piece));
+                button.setText(String.valueOf(gamePiece));
                 //TODO: Need clean up!
                 switch (v.getId()) {
                     case R.id.cell00:
-                        lastPlayed = new GameMove(piece, 0, 0);
+                        lastPlayed = new GameMove(gamePiece, 0, 0);
                         break;
                     case R.id.cell01:
-                        lastPlayed = new GameMove(piece, 0, 1);
+                        lastPlayed = new GameMove(gamePiece, 0, 1);
                         break;
                     case R.id.cell02:
-                        lastPlayed = new GameMove(piece, 0, 2);
+                        lastPlayed = new GameMove(gamePiece, 0, 2);
                         break;
                     case R.id.cell10:
-                        lastPlayed = new GameMove(piece, 1, 0);
+                        lastPlayed = new GameMove(gamePiece, 1, 0);
                         break;
                     case R.id.cell11:
-                        lastPlayed = new GameMove(piece, 1, 1);
+                        lastPlayed = new GameMove(gamePiece, 1, 1);
                         break;
                     case R.id.cell12:
-                        lastPlayed = new GameMove(piece, 1, 2);
+                        lastPlayed = new GameMove(gamePiece, 1, 2);
                         break;
                     case R.id.cell20:
-                        lastPlayed = new GameMove(piece, 2, 0);
+                        lastPlayed = new GameMove(gamePiece, 2, 0);
                         break;
                     case R.id.cell21:
-                        lastPlayed = new GameMove(piece, 2, 1);
+                        lastPlayed = new GameMove(gamePiece, 2, 1);
                         break;
                     case R.id.cell22:
-                        lastPlayed = new GameMove(piece, 2, 2);
+                        lastPlayed = new GameMove(gamePiece, 2, 2);
                         break;
                     default:
                         lastPlayed = null;
                         break;
                 }
             }
-        }
-
-        if (null == gameSession) {
-            resetSession(); //TODO: Do this more elegantly
         }
 
         //TODO: Refactor and automate computer play call
@@ -321,53 +349,57 @@ public class TicTacToeActivity extends Activity {
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
 
-                if (lastPlayed != null) {
-                    synchronized (lock) {
-                        //TODO: Refactor: Odd logic to set to null here!
-                        final GameMove gameMove = lastPlayed;
-                        lastPlayed = null;
-
-                        //TODO: Need clean up!
-                        final int id;
-                        if (gameMove.is(0, 0))
-                            id = R.id.cell00;
-                        else if (gameMove.is(0, 1))
-                            id = R.id.cell01;
-                        else if (gameMove.is(0, 2))
-                            id = R.id.cell02;
-                        else if (gameMove.is(1, 0))
-                            id = R.id.cell10;
-                        else if (gameMove.is(1, 1))
-                            id = R.id.cell11;
-                        else if (gameMove.is(1, 2))
-                            id = R.id.cell12;
-                        else if (gameMove.is(2, 0))
-                            id = R.id.cell20;
-                        else if (gameMove.is(2, 1))
-                            id = R.id.cell21;
-                        else if (gameMove.is(2, 2))
-                            id = R.id.cell22;
-                        else
-                            return;
-
-                        final Button button = (Button) findViewById(id);
-                        if (button.getText().equals("")) {
-                            button.setText(String.valueOf(gameMove.getPiece()));
-                        } else {
-                            throw new RuntimeException("TODO: What the hell??");
-                        }
-                    }
-                }
-
-                if (outcomeText != null) {
-                    final TextView outcome = (TextView) findViewById(R.id.victory);
-                    synchronized (lock) {
-                        outcome.setText(outcomeText);
-                        outcomeText = null; //TODO: There must be a better way!
-                    }
-                }
+                displayLastPlayed();
 
             }
         }.execute();
+    }
+
+    private void displayLastPlayed() {
+        if (lastPlayed != null) {
+            synchronized (lock) {
+                //TODO: Refactor: Odd logic to set to null here!
+                final GameMove gameMove = lastPlayed;
+                lastPlayed = null;
+
+                //TODO: Need clean up!
+                final int id;
+                if (gameMove.is(0, 0))
+                    id = R.id.cell00;
+                else if (gameMove.is(0, 1))
+                    id = R.id.cell01;
+                else if (gameMove.is(0, 2))
+                    id = R.id.cell02;
+                else if (gameMove.is(1, 0))
+                    id = R.id.cell10;
+                else if (gameMove.is(1, 1))
+                    id = R.id.cell11;
+                else if (gameMove.is(1, 2))
+                    id = R.id.cell12;
+                else if (gameMove.is(2, 0))
+                    id = R.id.cell20;
+                else if (gameMove.is(2, 1))
+                    id = R.id.cell21;
+                else if (gameMove.is(2, 2))
+                    id = R.id.cell22;
+                else
+                    return;
+
+                final Button button = (Button) findViewById(id);
+                if (button.getText().equals("")) {
+                    button.setText(String.valueOf(gameMove.getPiece()));
+                } else {
+                    throw new RuntimeException("TODO: What the hell??");
+                }
+            }
+        }
+
+        if (outcomeText != null) {
+            final TextView outcome = (TextView) findViewById(R.id.victory);
+            synchronized (lock) {
+                outcome.setText(outcomeText);
+                outcomeText = null; //TODO: There must be a better way!
+            }
+        }
     }
 }
