@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -38,6 +39,8 @@ import java.io.IOException;
  * @see SystemUiHider
  */
 public class TicTacToeActivity extends Activity {
+    private static final String TAG = "TicTacToe Activity";
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -161,11 +164,22 @@ public class TicTacToeActivity extends Activity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    private final int[] buttonIds = {
+            R.id.cell00
+            , R.id.cell01
+            , R.id.cell02
+            , R.id.cell10
+            , R.id.cell11
+            , R.id.cell12
+            , R.id.cell20
+            , R.id.cell21
+            , R.id.cell22
+    };
+
     private GameSession gameSession = null;
     private char gamePiece = ' ';
     private GameMove lastPlayed = null;
-    private String outcomeText = null; //TODO: horrible!
-    private Object lock = new Object(); //TODO: ugly!!!
+    private String outcomeText = null;
 
     private final LearningTicTacToeApi.Builder apiBuilder = new LearningTicTacToeApi.Builder(
             AndroidHttp.newCompatibleTransport()
@@ -192,55 +206,35 @@ public class TicTacToeActivity extends Activity {
             .input(new GameInput() {
                 @Override
                 public GameMove get() {
-                    synchronized (lock) {
-                        //TODO: Refactor: Odd logic to set to null here!
-                        final GameMove gameMove = lastPlayed;
-                        lastPlayed = null;
-                        return gameMove;
-                    }
+                    return lastPlayed;
                 }
             })
             .output(new GameOutput() {
                 @Override
                 public void onMove(final GameMove gameMove) {
-                    synchronized (lock) {
-                        lastPlayed = gameMove;
-                    }
+                    lastPlayed = gameMove;
                 }
 
                 @Override
                 public void onGameOver(char winner) {
-                    synchronized (lock) {
-                        outcomeText = "The winner is " + winner;
-                    }
+                    outcomeText = "The winner is " + winner;
                 }
             });
 
     public void resetGame(final View v) {
+        lastPlayed = null;
+        outcomeText = null;
+
         resetSession();
 
-        //TODO: Refactor cell id handling
-        final int[] buttonIds = {
-                R.id.cell00
-                , R.id.cell01
-                , R.id.cell02
-                , R.id.cell10
-                , R.id.cell11
-                , R.id.cell12
-                , R.id.cell20
-                , R.id.cell21
-                , R.id.cell22
-        };
-
-        synchronized (lock) {
-            for (int id : buttonIds) {
-                final Button button = (Button) findViewById(id);
-                button.setText("");
-            }
-
-            final TextView outcome = (TextView) findViewById(R.id.victory);
-            outcome.setText("");
+        for (int id : buttonIds) {
+            final Button button = (Button) findViewById(id);
+            button.setText("");
+            button.setEnabled(true);
         }
+
+        final TextView outcome = (TextView) findViewById(R.id.victory);
+        outcome.setText("");
     }
 
     private void resetSession() {
@@ -268,19 +262,11 @@ public class TicTacToeActivity extends Activity {
 
         if (gameConfig.getPlayerOne() == GameConfig.PlayerType.COMPUTER)
         {//Computer plays first move
-            new AsyncTask<Void, Void, Void>() {
+            new PlayTask() {
                 @Override
                 protected Void doInBackground(Void... params) {
                     gameSession.play(); //computer play
                     return null;
-                }
-
-                @Override
-                protected void onPostExecute(Void aVoid) {
-                    super.onPostExecute(aVoid);
-
-                    displayLastPlayed();
-
                 }
             }.execute();
         }
@@ -297,70 +283,76 @@ public class TicTacToeActivity extends Activity {
             resetSession(); //TODO: Do this more elegantly
         }
 
-        synchronized (lock) {
-            if (null == lastPlayed) {
-                button.setText(String.valueOf(gamePiece));
-                //TODO: Need clean up!
-                switch (v.getId()) {
-                    case R.id.cell00:
-                        lastPlayed = new GameMove(gamePiece, 0, 0);
-                        break;
-                    case R.id.cell01:
-                        lastPlayed = new GameMove(gamePiece, 0, 1);
-                        break;
-                    case R.id.cell02:
-                        lastPlayed = new GameMove(gamePiece, 0, 2);
-                        break;
-                    case R.id.cell10:
-                        lastPlayed = new GameMove(gamePiece, 1, 0);
-                        break;
-                    case R.id.cell11:
-                        lastPlayed = new GameMove(gamePiece, 1, 1);
-                        break;
-                    case R.id.cell12:
-                        lastPlayed = new GameMove(gamePiece, 1, 2);
-                        break;
-                    case R.id.cell20:
-                        lastPlayed = new GameMove(gamePiece, 2, 0);
-                        break;
-                    case R.id.cell21:
-                        lastPlayed = new GameMove(gamePiece, 2, 1);
-                        break;
-                    case R.id.cell22:
-                        lastPlayed = new GameMove(gamePiece, 2, 2);
-                        break;
-                    default:
-                        lastPlayed = null;
-                        break;
-                }
-            }
+        button.setText(String.valueOf(gamePiece));
+
+        //TODO: Need clean up!
+        switch (v.getId()) {
+            case R.id.cell00:
+                lastPlayed = new GameMove(gamePiece, 0, 0);
+                break;
+            case R.id.cell01:
+                lastPlayed = new GameMove(gamePiece, 0, 1);
+                break;
+            case R.id.cell02:
+                lastPlayed = new GameMove(gamePiece, 0, 2);
+                break;
+            case R.id.cell10:
+                lastPlayed = new GameMove(gamePiece, 1, 0);
+                break;
+            case R.id.cell11:
+                lastPlayed = new GameMove(gamePiece, 1, 1);
+                break;
+            case R.id.cell12:
+                lastPlayed = new GameMove(gamePiece, 1, 2);
+                break;
+            case R.id.cell20:
+                lastPlayed = new GameMove(gamePiece, 2, 0);
+                break;
+            case R.id.cell21:
+                lastPlayed = new GameMove(gamePiece, 2, 1);
+                break;
+            case R.id.cell22:
+                lastPlayed = new GameMove(gamePiece, 2, 2);
+                break;
+            default:
+                lastPlayed = null;
+                break;
         }
 
-        //TODO: Refactor and automate computer play call
-        new AsyncTask<Void, Void, Void>() {
+        new PlayTask() {
             @Override
             protected Void doInBackground(Void... params) {
                 gameSession.play(); //human play
                 gameSession.play(); //computer play
                 return null;
             }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-
-                displayLastPlayed();
-
-            }
         }.execute();
     }
 
-    private void displayLastPlayed() {
-        if (lastPlayed != null) {
-            synchronized (lock) {
-                //TODO: Refactor: Odd logic to set to null here!
+    private void enableGameButtons(final boolean enable) {
+        for (int id : buttonIds) { //Enable game buttons
+            findViewById(id).setEnabled(enable);
+        }
+    }
+
+    private abstract class PlayTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            enableGameButtons(false); //Disable game buttons
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            if (outcomeText != null) {
+                final TextView outcome = (TextView) findViewById(R.id.victory);
+                outcome.setText(outcomeText);
+            }
+            else if (lastPlayed != null) {
                 final GameMove gameMove = lastPlayed;
-                lastPlayed = null;
 
                 //TODO: Need clean up!
                 final int id;
@@ -389,16 +381,10 @@ public class TicTacToeActivity extends Activity {
                 if (button.getText().equals("")) {
                     button.setText(String.valueOf(gameMove.getPiece()));
                 } else {
-                    throw new RuntimeException("TODO: What the hell??");
+                    Log.w(TAG, "Attempted move "+lastPlayed+", but already played "+button.getText());
                 }
-            }
-        }
 
-        if (outcomeText != null) {
-            final TextView outcome = (TextView) findViewById(R.id.victory);
-            synchronized (lock) {
-                outcome.setText(outcomeText);
-                outcomeText = null; //TODO: There must be a better way!
+                enableGameButtons(true);
             }
         }
     }

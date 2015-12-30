@@ -48,6 +48,7 @@ public class PersistEndpoint {
                     final PersistBeanEntry fullEntry;
                     if ((fullEntry = load(entry)) != null) {
                         entry.setW(fullEntry.getW());
+                        entry.setDbId(fullEntry.getDbId());
                     }
 
                     //Update weight

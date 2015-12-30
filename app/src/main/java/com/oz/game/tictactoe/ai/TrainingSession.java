@@ -68,6 +68,6 @@ public class TrainingSession {
                 })
                 .playerOne(GameConfig.PlayerType.COMPUTER)
                 .playerTwo(GameConfig.PlayerType.COMPUTER)
-        ).startTraining(1);
+        ).startTraining(100);
     }
 }
