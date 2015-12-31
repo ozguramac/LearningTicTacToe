@@ -7,9 +7,7 @@ import com.oz.game.tictactoe.core.persist.PersistFacade;
 import com.oz.game.tictactoe.core.persist.PersistenceException;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 
@@ -32,8 +30,7 @@ public class TestGameSession {
     public void beforeTest() throws Exception {
         gameSession = new GameSession(
                 new GameConfig()
-                .playerOne(GameConfig.PlayerType.COMPUTER)
-                .playerTwo(GameConfig.PlayerType.COMPUTER)
+                .difficuilty(GameConfig.Difficulty.GREEDY)
                 .persistFacade(mockFacade)
                 .input(mockIn)
                 .output(mockOut)

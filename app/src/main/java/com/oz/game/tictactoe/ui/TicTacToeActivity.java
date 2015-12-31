@@ -10,7 +10,6 @@ import com.oz.game.tictactoe.core.GameConfig;
 import com.oz.game.tictactoe.core.GameSession;
 import com.oz.game.tictactoe.core.persist.PersistFacade;
 import com.oz.game.tictactoe.impl.PersistFacadeBase;
-import com.oz.game.tictactoe.impl.PersistFacadeImpl;
 import com.oz.game.tictactoe.core.io.GameMove;
 import com.oz.game.tictactoe.core.io.GameInput;
 import com.oz.game.tictactoe.core.io.GameOutput;
@@ -62,7 +61,10 @@ public class TicTacToeActivity extends Activity {
     /**
      * The flags to pass to {@link SystemUiHider#getInstance}.
      */
-    private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
+    private static final int HIDER_FLAGS =
+            View.SYSTEM_UI_FLAG_IMMERSIVE
+                    //| SystemUiHider.FLAG_HIDE_NAVIGATION
+            ;
 
     /**
      * The instance of the {@link SystemUiHider} for this activity.
@@ -112,10 +114,12 @@ public class TicTacToeActivity extends Activity {
         contentView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (TOGGLE_ON_CLICK) {
-                    mSystemUiHider.toggle();
-                } else {
-                    mSystemUiHider.show();
+                if (view == contentView) {
+                    if (TOGGLE_ON_CLICK) {
+                        mSystemUiHider.toggle();
+                    } else {
+                        mSystemUiHider.show();
+                    }
                 }
             }
         });
@@ -217,7 +221,12 @@ public class TicTacToeActivity extends Activity {
 
                 @Override
                 public void onGameOver(char winner) {
-                    outcomeText = "The winner is " + winner;
+                    if (winner == ' ') {
+                        outcomeText = "It is a tie :-)";
+                    }
+                    else {
+                        outcomeText = "The winner is " + winner;
+                    }
                 }
             });
 
@@ -249,14 +258,21 @@ public class TicTacToeActivity extends Activity {
         final Switch gpSwitch = (Switch)findViewById(R.id.gamePieceSwitch);
         if (gpSwitch.isChecked()) {
             gamePiece = gpSwitch.getTextOn().charAt(0);
-            gameConfig.playerOne(GameConfig.PlayerType.COMPUTER)
-                    .playerTwo(GameConfig.PlayerType.HUMAN);
+            gameConfig
+                    .playerOne(GameConfig.PlayerType.COMPUTER)
+                    .playerTwo(GameConfig.PlayerType.HUMAN)
+            ;
         }
         else {
             gamePiece = gpSwitch.getTextOff().charAt(0);
-            gameConfig.playerOne(GameConfig.PlayerType.HUMAN)
-                    .playerTwo(GameConfig.PlayerType.COMPUTER);
+            gameConfig
+                    .playerOne(GameConfig.PlayerType.HUMAN)
+                    .playerTwo(GameConfig.PlayerType.COMPUTER)
+            ;
         }
+
+        //TODO: Add UI for difficulty selection
+        gameConfig.difficuilty(GameConfig.Difficulty.EXPERT);
 
         gameSession = new GameSession(gameConfig);
 
@@ -347,11 +363,7 @@ public class TicTacToeActivity extends Activity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            if (outcomeText != null) {
-                final TextView outcome = (TextView) findViewById(R.id.victory);
-                outcome.setText(outcomeText);
-            }
-            else if (lastPlayed != null) {
+            if (lastPlayed != null) {
                 final GameMove gameMove = lastPlayed;
 
                 //TODO: Need clean up!
@@ -384,7 +396,15 @@ public class TicTacToeActivity extends Activity {
                     Log.w(TAG, "Attempted move "+lastPlayed+", but already played "+button.getText());
                 }
 
-                enableGameButtons(true);
+                lastPlayed = null; //played
+            }
+
+            if (outcomeText != null) {
+                final TextView outcome = (TextView) findViewById(R.id.victory);
+                outcome.setText(outcomeText);
+            }
+            else {
+                enableGameButtons(true); //Allow play to continue
             }
         }
     }

@@ -27,7 +27,10 @@ public class GameSession {
         referee = new Referee();
 
         persistController = new PersistController(config.getPersistFacade());
+
         history = new GameHistory(persistController);
+        history.setGreedyMoveThreshold(config.getDifficuilty().getThreshold());
+
         state = new GameState(history);
 
         playerX = createPlayer(config, GameState.GamePiece.X);
@@ -95,14 +98,11 @@ public class GameSession {
     }
 
     public void logStats() {
-        final double percOfBestMoveFinds = state.getHistory().getPercOfBestMoveFinds();
-        if (percOfBestMoveFinds > 0d) {
-            final NumberFormat percFmt = NumberFormat.getPercentInstance();
-            percFmt.setMinimumFractionDigits(4);
-            log.info("Best move find rate => "
-                    + percFmt.format(percOfBestMoveFinds));
-            log.info("Exploratory move rate => "
-                    + percFmt.format(state.getHistory().getPercOfExploratoryMoves()));
-        }
+        final NumberFormat percFmt = NumberFormat.getPercentInstance();
+        percFmt.setMinimumFractionDigits(4);
+        log.info("Best move find rate => "
+                + percFmt.format(state.getHistory().getPercOfBestMoveFinds()));
+        log.info("Exploratory move rate => "
+                + percFmt.format(state.getHistory().getPercOfExploratoryMoves()));
     }
 }

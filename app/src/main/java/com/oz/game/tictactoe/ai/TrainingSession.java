@@ -1,19 +1,13 @@
 package com.oz.game.tictactoe.ai;
 
-import com.google.api.client.extensions.android.http.AndroidHttp;
-import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.google.api.client.googleapis.services.AbstractGoogleClientRequest;
 import com.google.api.client.googleapis.services.GoogleClientRequestInitializer;
-import com.google.api.client.http.apache.ApacheHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.oz.game.tictactoe.backend.learningTicTacToeApi.LearningTicTacToeApi;
 import com.oz.game.tictactoe.core.GameConfig;
 import com.oz.game.tictactoe.core.GameSession;
 import com.oz.game.tictactoe.impl.PersistFacadeBase;
-import com.oz.game.tictactoe.impl.PersistFacadeImpl;
-
-import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.IOException;
 
@@ -66,8 +60,7 @@ public class TrainingSession {
                         return api;
                     }
                 })
-                .playerOne(GameConfig.PlayerType.COMPUTER)
-                .playerTwo(GameConfig.PlayerType.COMPUTER)
-        ).startTraining(100);
+                .difficuilty(GameConfig.Difficulty.EASY) //Maximize exploration
+        ).startTraining(1000);
     }
 }

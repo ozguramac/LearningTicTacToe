@@ -27,6 +27,7 @@ public class TestGameHistory {
     @Before
     public void beforeTest() throws Exception {
         history = new GameHistory(mockPersistController);
+        history.setGreedyMoveThreshold(1d); //ensure best move is used
     }
 
     @Test

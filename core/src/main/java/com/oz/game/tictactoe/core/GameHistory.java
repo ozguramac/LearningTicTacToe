@@ -17,12 +17,16 @@ import java.util.logging.Logger;
 class GameHistory implements PersistContainer {
     private static final Logger log = Logger.getLogger(GameHistory.class.getName());
 
+    private static int numBestMoveFinds = 0;
+    private static int numOfExplorations = 0;
+    private static int numOfEntries = 0;
+
     private final PersistController persistController;
     private final Collection<Entry> entries = new LinkedList<>();
 
     private GameState.GamePiece winner = GameState.GamePiece.NONE;
-    private int numBestMoveFinds = 0;
-    private int numOfExplorations = 0;
+
+    private double greedyMoveThreshold = 0.5d;
 
     static class Key implements PersistEntry {
         private final int x; //state of X
@@ -96,6 +100,7 @@ class GameHistory implements PersistContainer {
             //Persist to db
             this.winner = winner;
             persistController.save(this);
+            numOfEntries += entries.size();
         }
         catch (PersistenceException e) {
             log.throwing("Game History", "persist", e);
@@ -107,12 +112,22 @@ class GameHistory implements PersistContainer {
         return winner.toChar();
     }
 
+    double getGreedyMoveThreshold() {
+        return greedyMoveThreshold;
+    }
+
+    void setGreedyMoveThreshold(final double greedyMoveThreshold) {
+        if (greedyMoveThreshold >= 0d && greedyMoveThreshold <= 1d) {
+            this.greedyMoveThreshold = greedyMoveThreshold;
+        }
+    }
+
     GameState.Spot getBestMove(final GameState state, final GameState.GamePiece gp) {
         final Random random = new Random(System.currentTimeMillis());
 
         //Exploratory possibility of reinforcement learning:
         //Only do greedy lookup half of the time to explore new possibilities
-        if (random.nextBoolean()) {
+        if (random.nextDouble() < greedyMoveThreshold) {
             //Find best move from history
             final Key key = new Key(state, gp);
             try {
@@ -137,8 +152,8 @@ class GameHistory implements PersistContainer {
     }
 
     double getPercOfBestMoveFinds() {
-        return numBestMoveFinds / ((double) entries.size());
+        return numBestMoveFinds / ((double) numOfEntries);
     }
 
-    double getPercOfExploratoryMoves() { return numOfExplorations / ((double) entries.size()); }
+    double getPercOfExploratoryMoves() { return numOfExplorations / ((double) numOfEntries); }
 }
