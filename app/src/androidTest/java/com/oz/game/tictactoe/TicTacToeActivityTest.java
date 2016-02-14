@@ -21,6 +21,7 @@ public class TicTacToeActivityTest extends ActivityInstrumentationTestCase2<TicT
     }
 
     public void testPlay() {
+        //TODO: Not passing: Do we need async setup?
         final Button cell11 = (Button) getActivity().findViewById(R.id.cell11);
         assertEquals(cell11.getText().length(), 0);
         TouchUtils.clickView(this, cell11);

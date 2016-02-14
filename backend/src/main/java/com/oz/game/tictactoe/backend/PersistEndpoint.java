@@ -13,6 +13,9 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 
 import java.io.Closeable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -117,10 +120,10 @@ public class PersistEndpoint {
         try {
             final Closeable c = ObjectifyService.begin();
             try {
+                final Collection states = Arrays.asList(entry.getX(), entry.getO());
                 return ofy().load().type(PersistBeanEntry.class)
-                        .filter("x", entry.getX())
-                        .filter("o", entry.getO())
-                        .filter("t", entry.getT())
+                        .filter("x in ", states)
+                        .filter("o in ", states)
                         .filter("w >", 0.5) //Filter for better than 50-50 prob!
                         .order("-w")
                         .first()
