@@ -20,6 +20,7 @@ class GameHistory implements PersistContainer {
     private static int numBestMoveFinds = 0;
     private static int numOfExplorations = 0;
     private static int numOfEntries = 0;
+    private static int numOfTotalEntries = 0;
 
     private final PersistController persistController;
     private final Collection<Entry> entries = new LinkedList<>();
@@ -91,6 +92,7 @@ class GameHistory implements PersistContainer {
         entries.add(new Entry(state, spot, gp));
     }
 
+    @Override
     public Iterable<Entry> getEntries() {
         return Collections.unmodifiableCollection(entries);
     }
@@ -110,6 +112,11 @@ class GameHistory implements PersistContainer {
     @Override
     public char getWinner() {
         return winner.toChar();
+    }
+
+    @Override
+    public void setTotalCount(int totalCount) {
+        numOfTotalEntries = totalCount;
     }
 
     double getGreedyMoveThreshold() {
@@ -151,9 +158,11 @@ class GameHistory implements PersistContainer {
         return spot;
     }
 
-    double getPercOfBestMoveFinds() {
+    static double getPercOfBestMoveFinds() {
         return numBestMoveFinds / ((double) numOfEntries);
     }
 
-    double getPercOfExploratoryMoves() { return numOfExplorations / ((double) numOfEntries); }
+    static double getPercOfExploratoryMoves() { return numOfExplorations / ((double) numOfEntries); }
+
+    static int getNumOfTotalEntries() { return numOfTotalEntries; }
 }

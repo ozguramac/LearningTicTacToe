@@ -10,11 +10,14 @@ import com.oz.game.tictactoe.core.GameSession;
 import com.oz.game.tictactoe.impl.PersistFacadeBase;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Created by developer on 8/15/15.
  */
 public class TrainingSession {
+    private static final Logger log = Logger.getLogger(TrainingSession.class.getName());
+
     private final GameConfig gameConfig;
 
     private TrainingSession(final GameConfig gameConfig) {
@@ -33,7 +36,8 @@ public class TrainingSession {
                 gameSession.play();
             } while (false == gameSession.isGameOver());
 
-            if ( numOfGames < 10 || (i % (numOfGames/10)) == 0 ) {
+            if ( numOfGames < 10 || (i % 100) == 0 ) {
+                log.info(String.format("Played %d games so far", i+1));
                 gameSession.logStats();
             }
         }
@@ -61,6 +65,6 @@ public class TrainingSession {
                     }
                 })
                 .difficuilty(GameConfig.Difficulty.EASY) //Maximize exploration
-        ).startTraining(1000);
+        ).startTraining(10000);
     }
 }

@@ -100,9 +100,11 @@ public class GameSession {
     public void logStats() {
         final NumberFormat percFmt = NumberFormat.getPercentInstance();
         percFmt.setMinimumFractionDigits(4);
-        log.info("Best move find rate => "
-                + percFmt.format(state.getHistory().getPercOfBestMoveFinds()));
-        log.info("Exploratory move rate => "
-                + percFmt.format(state.getHistory().getPercOfExploratoryMoves()));
+        log.info(String.format("Best move find rate => %s  Exploratory move rate => %s" +
+                        "  Total Count is %d"
+                ,percFmt.format(GameHistory.getPercOfBestMoveFinds())
+                ,percFmt.format(GameHistory.getPercOfExploratoryMoves())
+                ,GameHistory.getNumOfTotalEntries())
+        );
     }
 }

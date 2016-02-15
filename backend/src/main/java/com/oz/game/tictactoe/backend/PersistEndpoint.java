@@ -80,6 +80,12 @@ public class PersistEndpoint {
                     }
                 }
 
+                final int cnt = ofy().load()
+                        .type(PersistBeanEntry.class)
+                        .count();
+
+                persistBean.setLastCount(cnt);
+
                 return persistBean;
             }
             finally {

@@ -31,7 +31,8 @@ public abstract class PersistFacadeBase implements PersistFacade {
         }
         content.setEntries(entries);
         try {
-            getApi().save(content).execute();
+            final PersistBean savedContent = getApi().save(content).execute();
+            persistContainer.setTotalCount( savedContent.getLastCount() );
         }
         catch (IOException e) {
             throw new PersistenceException("Failed to persist entry", e);
