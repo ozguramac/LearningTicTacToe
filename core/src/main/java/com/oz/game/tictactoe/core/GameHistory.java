@@ -131,12 +131,12 @@ class GameHistory implements PersistContainer {
 
     GameState.Spot getBestMove(final GameState state, final GameState.GamePiece gp) {
         final Random random = new Random(System.currentTimeMillis());
+        final Key key = new Key(state, gp);
 
         //Exploratory possibility of reinforcement learning:
         //Only do greedy lookup half of the time to explore new possibilities
         if (random.nextDouble() < greedyMoveThreshold) {
             //Find best move from history
-            final Key key = new Key(state, gp);
             try {
                 final Entry found = persistController.findBest(key);
                 if (found != null) {
@@ -151,8 +151,21 @@ class GameHistory implements PersistContainer {
             numOfExplorations++;
         }
 
-        //Else randomly choose from empty spots
         final List<GameState.Spot> empties = state.getEmptySpots();
+
+        //Else try to choose a previously unplayed spot
+        for (GameState.Spot empty : empties) {
+            final Entry possible = new Entry(key, empty.toNum());
+            try {
+                if (null == persistController.find(possible)) {
+                    return empty;
+                }
+            } catch (PersistenceException e) {
+                log.throwing("Game History", "find possible spot", e);
+            }
+        }
+
+        //Else randomly choose from empty spots
         final int randSpotIdx = random.nextInt(empties.size());
         final GameState.Spot spot = empties.get(randSpotIdx);
         return spot;
