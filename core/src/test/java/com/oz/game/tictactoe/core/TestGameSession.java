@@ -30,7 +30,7 @@ public class TestGameSession {
     public void beforeTest() throws Exception {
         gameSession = new GameSession(
                 new GameConfig()
-                .difficuilty(GameConfig.Difficulty.GREEDY)
+                .difficulty(GameConfig.Difficulty.GREEDY)
                 .persistFacade(mockFacade)
                 .input(mockIn)
                 .output(mockOut)

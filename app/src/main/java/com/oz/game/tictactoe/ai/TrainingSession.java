@@ -64,7 +64,7 @@ public class TrainingSession {
                         return api;
                     }
                 })
-                .difficuilty(GameConfig.Difficulty.EASY) //Maximize exploration
+                .difficulty(GameConfig.Difficulty.EASY) //Maximize exploration
         ).startTraining(10000);
     }
 }

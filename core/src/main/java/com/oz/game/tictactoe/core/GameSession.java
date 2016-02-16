@@ -29,7 +29,7 @@ public class GameSession {
         persistController = new PersistController(config.getPersistFacade());
 
         history = new GameHistory(persistController);
-        history.setGreedyMoveThreshold(config.getDifficuilty().getThreshold());
+        history.setGreedyMoveThreshold(config.getDifficulty().getThreshold());
 
         state = new GameState(history);
 

@@ -69,10 +69,10 @@ public class GameConfig {
         return this;
     }
 
-    public Difficulty getDifficuilty() { return difficuilty; }
+    public Difficulty getDifficulty() { return difficuilty; }
 
-    public GameConfig difficuilty(final Difficulty difficuilty) {
-        this.difficuilty = difficuilty;
+    public GameConfig difficulty(final Difficulty difficulty) {
+        this.difficuilty = difficulty;
         return this;
     }
 

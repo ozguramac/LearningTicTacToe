@@ -272,7 +272,7 @@ public class TicTacToeActivity extends Activity {
         }
 
         //TODO: Add UI for difficulty selection
-        gameConfig.difficuilty(GameConfig.Difficulty.EXPERT);
+        gameConfig.difficulty(GameConfig.Difficulty.EXPERT);
 
         gameSession = new GameSession(gameConfig);
 
@@ -351,6 +351,15 @@ public class TicTacToeActivity extends Activity {
         }
     }
 
+    public static interface PlayProgressListener {
+        public void onPlayed(); //TODO: More sophisticated event data
+    }
+
+    private PlayProgressListener playProgressListener = null;
+    public void setPlayProgressListener(final PlayProgressListener playProgressListener) {
+        this.playProgressListener = playProgressListener;
+    }
+
     private abstract class PlayTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
@@ -405,6 +414,10 @@ public class TicTacToeActivity extends Activity {
             }
             else {
                 enableGameButtons(true); //Allow play to continue
+            }
+
+            if (playProgressListener != null) {
+                playProgressListener.onPlayed();
             }
         }
     }
