@@ -19,7 +19,10 @@ class GameHistory implements PersistContainer {
 
     private static int numBestMoveFinds = 0;
     private static int numOfExplorations = 0;
+    private static int numOfUnplayedFinds = 0;
+    private static int numOfRandomMoves = 0;
     private static int numOfEntries = 0;
+    private static int numOfTotalEntriesBegin = 0;
     private static int numOfTotalEntries = 0;
 
     private final PersistController persistController;
@@ -117,6 +120,9 @@ class GameHistory implements PersistContainer {
     @Override
     public void setTotalCount(int totalCount) {
         numOfTotalEntries = totalCount;
+        if (numOfTotalEntriesBegin == 0) {
+            numOfTotalEntriesBegin = numOfTotalEntries; //once
+        }
     }
 
     double getGreedyMoveThreshold() {
@@ -158,6 +164,7 @@ class GameHistory implements PersistContainer {
             final Entry possible = new Entry(key, empty.toNum());
             try {
                 if (null == persistController.find(possible)) {
+                    numOfUnplayedFinds++;
                     return empty;
                 }
             } catch (PersistenceException e) {
@@ -168,6 +175,7 @@ class GameHistory implements PersistContainer {
         //Else randomly choose from empty spots
         final int randSpotIdx = random.nextInt(empties.size());
         final GameState.Spot spot = empties.get(randSpotIdx);
+        numOfRandomMoves++;
         return spot;
     }
 
@@ -177,5 +185,12 @@ class GameHistory implements PersistContainer {
 
     static double getPercOfExploratoryMoves() { return numOfExplorations / ((double) numOfEntries); }
 
+    static double getPercOfUnplayedFinds() { return numOfUnplayedFinds / ((double) numOfEntries); }
+
+    static double getPercOfRandomMoves() { return numOfRandomMoves / ((double) numOfEntries); }
+
     static int getNumOfTotalEntries() { return numOfTotalEntries; }
+
+    static int getNumOfNewlyAddedEntries() { return numOfTotalEntries - numOfTotalEntriesBegin; }
+
 }
