@@ -25,7 +25,7 @@ class PersistController {
     GameHistory.Entry find(final GameHistory.Entry entry) throws PersistenceException {
         final PersistEntry fullEntry = facade.match(entry);
         if (fullEntry != null) {
-            return new GameHistory.Entry(entry, entry.getMoveLocNum());
+            return new GameHistory.Entry(entry, entry.getMoveLocNum(), fullEntry.getNumOfPlays());
         }
         return null;
     }
@@ -40,7 +40,7 @@ class PersistController {
         if (null == found) {
             return null;
         }
-        return new GameHistory.Entry(key, found.getMoveLocNum());
+        return new GameHistory.Entry(key, found.getMoveLocNum(), found.getNumOfPlays());
     }
 
     void delete(final GameHistory.Entry entry) throws PersistenceException {

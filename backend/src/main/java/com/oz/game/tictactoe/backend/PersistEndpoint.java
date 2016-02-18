@@ -50,8 +50,7 @@ public class PersistEndpoint {
                     //Pull from db
                     final PersistBeanEntry fullEntry;
                     if ((fullEntry = load(entry)) != null) {
-                        entry.setW(fullEntry.getW());
-                        entry.setDbId(fullEntry.getDbId());
+                        entry.populate(fullEntry);
                     }
 
                     //Update weight
@@ -65,6 +64,9 @@ public class PersistEndpoint {
                     else {
                         entry.loser();
                     }
+
+                    //Increment num of times used as move
+                    entry.incrementUsage();
                 }
 
 
@@ -75,7 +77,7 @@ public class PersistEndpoint {
                 for (Map.Entry<Key<PersistBeanEntry>, PersistBeanEntry> e : map.entrySet()) {
                     for (PersistBeanEntry pe : persistBean.getEntries()) {
                         if (e.getValue() == pe) {
-                            pe.setDbId(e.getKey().getId());
+                            pe.populate(e.getKey());
                         }
                     }
                 }

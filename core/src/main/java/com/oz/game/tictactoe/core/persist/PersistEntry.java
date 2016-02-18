@@ -11,4 +11,6 @@ public interface PersistEntry {
     char getWhoseTurn();
 
     Integer getMoveLocNum();
+
+    int getNumOfPlays();
 }

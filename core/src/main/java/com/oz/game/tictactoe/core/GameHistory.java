@@ -20,6 +20,7 @@ class GameHistory implements PersistContainer {
     private static int numBestMoveFinds = 0;
     private static int numOfExplorations = 0;
     private static int numOfUnplayedFinds = 0;
+    private static int numOfLeastPlayedFinds = 0;
     private static int numOfRandomMoves = 0;
     private static int numOfEntries = 0;
     private static int numOfTotalEntriesBegin = 0;
@@ -62,28 +63,40 @@ class GameHistory implements PersistContainer {
         public Integer getMoveLocNum() {
             return null;
         }
+
+        @Override
+        public int getNumOfPlays() {
+            return -1;
+        }
     }
 
     static class Entry extends Key {
         private final int l; //location num of the move
+        private final int n; //num of plays
 
-        private Entry(final int x, final int o, final char t, final int l) {
+        private Entry(final int x, final int o, final char t, final int l, final int n) {
             super(x, o, t);
             this.l = l;
+            this.n = n;
         }
 
         private Entry(final GameState state, final GameState.Spot spot, final GameState.GamePiece gp) {
             this(state.of(GameState.GamePiece.X), state.of(GameState.GamePiece.O)
-                    , gp.toChar(), spot.toNum());
+                    , gp.toChar(), spot.toNum(), 0);
         }
 
-        Entry (final Key k, int l) {
-            this(k.getStateOfX(), k.getStateOfO(), k.getWhoseTurn(), l);
+        Entry (final Key k, int l, int n) {
+            this(k.getStateOfX(), k.getStateOfO(), k.getWhoseTurn(), l, n);
         }
 
         @Override
         public Integer getMoveLocNum() {
             return l;
+        }
+
+        @Override
+        public int getNumOfPlays() {
+            return n;
         }
     }
 
@@ -158,18 +171,38 @@ class GameHistory implements PersistContainer {
         }
 
         final List<GameState.Spot> empties = state.getEmptySpots();
+        GameState.Spot leastPlayed = null;
+        int numOfLeastPlayed = 0;
 
-        //Else try to choose a previously unplayed spot
-        for (GameState.Spot empty : empties) {
-            final Entry possible = new Entry(key, empty.toNum());
-            try {
-                if (null == persistController.find(possible)) {
-                    numOfUnplayedFinds++;
-                    return empty;
+        //Else try to choose a previously unplayed spot, otherwise record least played spot
+        {int minNumPlays = Integer.MAX_VALUE;
+            for (GameState.Spot empty : empties) {
+                final Entry possible = new Entry(key, empty.toNum(), 0);
+                try {
+                    final Entry foundEntry = persistController.find(possible);
+                    if (null == foundEntry) {
+                        numOfUnplayedFinds++;
+                        return empty; //choose first previously unplayed spot
+                    }
+
+                    if (foundEntry.getNumOfPlays() < minNumPlays) {
+                        leastPlayed = empty;
+                        minNumPlays = foundEntry.getNumOfPlays();
+                        numOfLeastPlayed = 1; //Reset to only one found so far
+                    }
+                    else if (foundEntry.getNumOfPlays() == minNumPlays) {
+                        numOfLeastPlayed++; //Record how many were least but equal times played
+                    }
+                } catch (PersistenceException e) {
+                    log.throwing("Game History", "find possible spot", e);
                 }
-            } catch (PersistenceException e) {
-                log.throwing("Game History", "find possible spot", e);
             }
+        }
+
+        //Else choose the least played unless all of them were played same number of times
+        if (leastPlayed != null && numOfLeastPlayed < empties.size()) {
+            numOfLeastPlayedFinds++;
+            return leastPlayed;
         }
 
         //Else randomly choose from empty spots
@@ -186,6 +219,8 @@ class GameHistory implements PersistContainer {
     static double getPercOfExploratoryMoves() { return numOfExplorations / ((double) numOfEntries); }
 
     static double getPercOfUnplayedFinds() { return numOfUnplayedFinds / ((double) numOfEntries); }
+
+    static double getPercOfLeastPlayedFinds() { return numOfLeastPlayedFinds / ((double) numOfEntries); }
 
     static double getPercOfRandomMoves() { return numOfRandomMoves / ((double) numOfEntries); }
 

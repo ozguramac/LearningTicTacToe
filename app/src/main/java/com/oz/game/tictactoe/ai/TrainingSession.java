@@ -64,7 +64,7 @@ public class TrainingSession {
                         return api;
                     }
                 })
-                .difficulty(GameConfig.Difficulty.EASY) //Maximize exploration
+                .difficulty(GameConfig.Difficulty.BREEZE) //Maximize exploration
         ).startTraining(10000);
     }
 }

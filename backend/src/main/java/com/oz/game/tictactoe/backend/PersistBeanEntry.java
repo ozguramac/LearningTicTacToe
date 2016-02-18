@@ -1,9 +1,11 @@
 package com.oz.game.tictactoe.backend;
 
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 import com.googlecode.objectify.annotation.Ignore;
 import com.googlecode.objectify.annotation.Index;
+import com.googlecode.objectify.annotation.Unindex;
 import com.googlecode.objectify.condition.IfNotDefault;
 
 /**
@@ -29,13 +31,12 @@ public class PersistBeanEntry {
     //Weight of winning possibility
     @Index(IfNotDefault.class)
     private double w = 0.5; //probable either way by default
+    //How many times was this move used?
+    @Unindex
+    private int n = 0;
 
     public Long getDbId() {
         return dbId;
-    }
-
-    void setDbId(long dbId) {
-        this.dbId = dbId;
     }
 
     public int getX() {
@@ -70,12 +71,22 @@ public class PersistBeanEntry {
         this.l = l;
     }
 
-    double getW() {
+    public double getW() {
         return w;
     }
 
-    void setW(double w) {
-        this.w = w;
+    public int getN() {
+        return n;
+    }
+
+    void populate(final Key<PersistBeanEntry> key) {
+        this.dbId = key.getId();
+    }
+
+    void populate(final PersistBeanEntry fullEntry) {
+        this.w = fullEntry.w;
+        this.dbId = fullEntry.dbId;
+        this.n = fullEntry.n;
     }
 
     //TODO: Refactor weight modification to support other algorithms
@@ -86,6 +97,10 @@ public class PersistBeanEntry {
     void loser() { w /= 2.0; }
 
     void tie() { w = (w + 0.5) / 2.0; }
+
+    void incrementUsage() {
+        n++;
+    }
 
     @Override
     public String toString() {
@@ -98,6 +113,7 @@ public class PersistBeanEntry {
         sb.append(", t=").append(t);
         sb.append(", l=").append(l);
         sb.append(", w=").append(w);
+        sb.append(", n=").append(n);
         sb.append('}');
         return sb.toString();
     }

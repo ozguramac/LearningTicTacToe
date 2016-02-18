@@ -112,5 +112,10 @@ public abstract class PersistFacadeBase implements PersistFacade {
         public Integer getMoveLocNum() {
             return pbe.getL();
         }
+
+        @Override
+        public int getNumOfPlays() {
+            return pbe.getN();
+        }
     }
 }

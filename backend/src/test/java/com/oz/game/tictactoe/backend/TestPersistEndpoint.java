@@ -39,10 +39,27 @@ public class TestPersistEndpoint {
     @Test
     public void testSave() throws Exception {
         final PersistBean savedPb = save();
+        Assert.assertTrue("Last Count", savedPb.getLastCount() > 1);
+
         for (PersistBeanEntry savedPe : savedPb.getEntries()) {
             Assert.assertNotNull("No db id set", savedPe.getDbId());
+            Assert.assertTrue("Incremented usage", savedPe.getN() > 0);
         }
+
         log.info("Saved " + savedPb);
+    }
+
+    @Test
+    public void testUpdate() throws Exception {
+        final PersistBean savedPb = save();
+        savedPb.setWinner('X');
+
+        final PersistBean updatedPb = endpoint.save(savedPb);
+        for (PersistBeanEntry updatedPe : updatedPb.getEntries()) {
+            Assert.assertTrue("Incremented usage", updatedPe.getN() > 1);
+        }
+
+        log.info("Updated " + updatedPb);
     }
 
     @Test
@@ -105,14 +122,21 @@ public class TestPersistEndpoint {
         pe0.setX(666);
         pe0.setT('X');
         pe0.setL(666);
-        pe0.setW(0.666);
+        pe0.loser();
 
         final PersistBeanEntry pe1 = new PersistBeanEntry();
         pe1.setO(666);
         pe1.setX(666);
         pe1.setT('X');
         pe1.setL(888);
-        pe1.setW(0.999);
+        pe1.winner();
+
+        final PersistBeanEntry pe2 = new PersistBeanEntry();
+        pe2.setO(111);
+        pe2.setX(222);
+        pe2.setT('O');
+        pe2.setL(333);
+        pe2.loser();
 
         final PersistBean pb = new PersistBean();
         pb.setEntries(new PersistBeanEntry[]{
