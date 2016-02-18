@@ -37,7 +37,7 @@ public class TestGameHistory {
 
         final int l = 333;
 
-        final GameHistory.Entry e = new GameHistory.Entry(key, l);
+        final GameHistory.Entry e = new GameHistory.Entry(key, l, 0);
 
         Assert.assertEquals(key.getStateOfX(), e.getStateOfX());
         Assert.assertEquals(key.getStateOfO(), e.getStateOfO());

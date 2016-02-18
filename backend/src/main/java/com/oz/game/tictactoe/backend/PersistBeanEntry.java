@@ -96,7 +96,9 @@ public class PersistBeanEntry {
 
     void loser() { w /= 2.0; }
 
-    void tie() { w = (w + 0.5) / 2.0; }
+    void tie() {
+        winner(); //Consider tie a win-win ;-)
+    }
 
     void incrementUsage() {
         n++;

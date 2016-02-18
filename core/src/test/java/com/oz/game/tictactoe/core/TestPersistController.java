@@ -42,9 +42,9 @@ public class TestPersistController {
     public void testFindMax() throws Exception {
         final GameHistory.Key key = new GameHistory.Key(666, 999, 'Z');
 
-        final GameHistory.Entry entry1 = new GameHistory.Entry(key, 222);
-        final GameHistory.Entry entry2 = new GameHistory.Entry(key, 333);
-        final GameHistory.Entry entry3 = new GameHistory.Entry(key, 111);
+        final GameHistory.Entry entry1 = new GameHistory.Entry(key, 222, 0);
+        final GameHistory.Entry entry2 = new GameHistory.Entry(key, 333, 0);
+        final GameHistory.Entry entry3 = new GameHistory.Entry(key, 111, 0);
 
         when(mockHistory.getEntries()).thenReturn(Arrays.asList(entry1, entry2, entry3));
 
@@ -78,7 +78,7 @@ public class TestPersistController {
         Assert.assertNull("Not found", persistController.findBest(key));
         verify(mockPersistFacade).matchBest(key);
 
-        final GameHistory.Entry entry = new GameHistory.Entry(key, 333);
+        final GameHistory.Entry entry = new GameHistory.Entry(key, 333, 0);
         Assert.assertNull("Not found", persistController.find(entry));
         verify(mockPersistFacade).match(entry);
     }
@@ -86,7 +86,7 @@ public class TestPersistController {
     @Test
     public void testWriteError() throws Exception {
         final GameHistory.Key key = new GameHistory.Key(666, 999, 'Z');
-        final GameHistory.Entry e = new GameHistory.Entry(key, 222);
+        final GameHistory.Entry e = new GameHistory.Entry(key, 222, 0);
 
         when(mockPersistFacade.match(eq(e))).thenThrow(PersistenceException.class);
 
