@@ -272,7 +272,7 @@ public class TicTacToeActivity extends Activity {
         }
 
         //TODO: Add UI for difficulty selection
-        gameConfig.difficulty(GameConfig.Difficulty.EXPERT);
+        gameConfig.difficulty(GameConfig.Difficulty.GREEDY);
 
         gameSession = new GameSession(gameConfig);
 
@@ -339,6 +339,7 @@ public class TicTacToeActivity extends Activity {
             @Override
             protected Void doInBackground(Void... params) {
                 gameSession.play(); //human play
+                lastPlayed = null; //reset last played before computer play
                 gameSession.play(); //computer play
                 return null;
             }

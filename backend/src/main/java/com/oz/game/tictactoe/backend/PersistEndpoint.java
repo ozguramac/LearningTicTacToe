@@ -128,14 +128,18 @@ public class PersistEndpoint {
         try {
             final Closeable c = ObjectifyService.begin();
             try {
-                final Collection states = Arrays.asList(entry.getX(), entry.getO());
-                return ofy().load().type(PersistBeanEntry.class)
-                        .filter("x in ", states)
-                        .filter("o in ", states)
-                        .filter("w >", 0.5) //Filter for better than 50-50 prob!
-                        .order("-w")
-                        .first()
-                        .now();
+                //find both symmetric results and return better
+                final PersistBeanEntry
+                         pbe1 = findMax(entry.getX(), entry.getO())
+                        ,pbe2 = findMax(entry.getO(), entry.getX());
+                final double
+                         w1 = (pbe1 != null) ? pbe1.getW() : 0.0
+                        ,w2 = (pbe2 != null) ? pbe2.getW() : 0.0;
+
+                if (w1 > w2) {
+                    return pbe2;
+                }
+                return pbe1;
             }
             finally {
                 c.close();
@@ -145,6 +149,16 @@ public class PersistEndpoint {
             log.throwing(getClass().getName(), "findMax", t);
             throw new PersistException("Could not find best like "+entry);
         }
+    }
+
+    private PersistBeanEntry findMax(final int state1, final int state2) {
+        return ofy().load().type(PersistBeanEntry.class)
+                .filter("x", state1)
+                .filter("o", state2)
+                .filter("w >", 0.5) //Filter for better than 50-50 prob!
+                .order("-w")
+                .first()
+                .now();
     }
 
     @ApiMethod(name = "delete")
