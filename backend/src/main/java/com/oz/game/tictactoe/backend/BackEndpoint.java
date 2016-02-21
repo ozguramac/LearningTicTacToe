@@ -13,9 +13,6 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 
 import java.io.Closeable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -33,15 +30,15 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
                 packagePath = ""
         )
 )
-public class PersistEndpoint {
-    private static final Logger log = Logger.getLogger(PersistEndpoint.class.getName());
+public class BackEndpoint {
+    private static final Logger log = Logger.getLogger(BackEndpoint.class.getName());
 
     static {
         ObjectifyService.register(PersistBeanEntry.class);
     }
 
     @ApiMethod(name = "save")
-    public PersistBean save(final PersistBean persistBean) throws PersistException {
+    public PersistBean save(final PersistBean persistBean) throws BackendException {
         try {
             final Closeable c = ObjectifyService.begin();
             try {
@@ -82,12 +79,6 @@ public class PersistEndpoint {
                     }
                 }
 
-                final int cnt = ofy().load()
-                        .type(PersistBeanEntry.class)
-                        .count();
-
-                persistBean.setLastCount(cnt);
-
                 return persistBean;
             }
             finally {
@@ -96,12 +87,12 @@ public class PersistEndpoint {
         }
         catch (Throwable t) {
             log.throwing(getClass().getName(), "save", t);
-            throw new PersistException("Could not persist "+persistBean);
+            throw new BackendException("Could not persist "+persistBean);
         }
     }
 
     @ApiMethod(name = "find")
-    public PersistBeanEntry load(final PersistBeanEntry entry) throws PersistException {
+    public PersistBeanEntry load(final PersistBeanEntry entry) throws BackendException {
         try {
             final Closeable c = ObjectifyService.begin();
             try {
@@ -119,12 +110,12 @@ public class PersistEndpoint {
         }
         catch (Throwable t) {
             log.throwing(getClass().getName(), "load", t);
-            throw new PersistException("Could not find "+entry);
+            throw new BackendException("Could not find "+entry);
         }
     }
 
     @ApiMethod(name = "findBest")
-    public PersistBeanEntry findMax(final PersistBeanEntry entry) throws PersistException {
+    public PersistBeanEntry findMax(final PersistBeanEntry entry) throws BackendException {
         try {
             final Closeable c = ObjectifyService.begin();
             try {
@@ -147,7 +138,7 @@ public class PersistEndpoint {
         }
         catch (Throwable t) {
             log.throwing(getClass().getName(), "findMax", t);
-            throw new PersistException("Could not find best like "+entry);
+            throw new BackendException("Could not find best like "+entry);
         }
     }
 
@@ -162,7 +153,7 @@ public class PersistEndpoint {
     }
 
     @ApiMethod(name = "delete")
-    public void remove(final PersistBeanEntry entry) throws PersistException {
+    public void remove(final PersistBeanEntry entry) throws BackendException {
         try {
             final Closeable c = ObjectifyService.begin();
             try {
@@ -176,7 +167,30 @@ public class PersistEndpoint {
         }
         catch (Throwable t) {
             log.throwing(getClass().getName(), "remove", t);
-            throw new PersistException("Could not delete "+entry);
+            throw new BackendException("Could not delete "+entry);
+        }
+    }
+
+    @ApiMethod(name = "stats")
+    public StatsBean getStats() throws BackendException {
+        try {
+            final Closeable c = ObjectifyService.begin();
+            try {
+                final int cnt = ofy().load()
+                        .type(PersistBeanEntry.class)
+                        .count();
+
+                final StatsBean statsBean = new StatsBean();
+                statsBean.setLastCount(cnt);
+                return statsBean;
+            }
+            finally {
+                c.close();
+            }
+        }
+        catch (Throwable t) {
+            log.throwing(getClass().getName(), "stats", t);
+            throw new BackendException("Could not get stats");
         }
     }
 }

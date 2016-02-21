@@ -23,6 +23,8 @@ public class GameSession {
 
     private final boolean debugState;
 
+    private final Integer trainingGoal;
+
     public GameSession(final GameConfig config) {
         referee = new Referee();
 
@@ -39,6 +41,8 @@ public class GameSession {
         debugState = config.isPrintState();
 
         out = config.getOutput();
+
+        trainingGoal = config.getTrainingGoal();
     }
 
     private static Player createPlayer(GameConfig config, GameState.GamePiece gp) {
@@ -100,10 +104,11 @@ public class GameSession {
     public void logStats() {
         final NumberFormat percFmt = NumberFormat.getPercentInstance();
         percFmt.setMinimumFractionDigits(4);
-        log.info(String.format("Total # => %d  Move Find Rates: " +
+        log.info(String.format("Total # => %d Goal => %s  Move Find Rates: " +
                                 " Best => %s  Exploratory => %s " +
-                                " Unplayed => %s  Least Played => %s  Random => %s "
-                        ,GameHistory.getNumOfTotalEntries()
+                                " Unplayed => %s  Least => %s  Random => %s "
+                        ,history.getNumOfTotalEntries()
+                        ,trainingGoal != null ? String.valueOf(trainingGoal) : "None"
                         ,percFmt.format(GameHistory.getPercOfBestMoveFinds())
                         ,percFmt.format(GameHistory.getPercOfExploratoryMoves())
                         ,percFmt.format(GameHistory.getPercOfUnplayedFinds())
@@ -111,5 +116,9 @@ public class GameSession {
                         ,percFmt.format(GameHistory.getPercOfRandomMoves())
                 )
         );
+    }
+
+    public boolean isTrained() {
+        return trainingGoal != null && history.getNumOfTotalEntries() > trainingGoal;
     }
 }

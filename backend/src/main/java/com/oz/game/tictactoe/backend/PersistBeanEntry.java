@@ -90,15 +90,9 @@ public class PersistBeanEntry {
     }
 
     //TODO: Refactor weight modification to support other algorithms
-    void winner() {
-        w = (w + 1.0) / 2.0;
-    }
-
+    void winner() { w = (w + 0.9) / 2.0; }
     void loser() { w /= 2.0; }
-
-    void tie() {
-        winner(); //Consider tie a win-win ;-)
-    }
+    void tie() { w = (w + 1.0) / 2.0; }
 
     void incrementUsage() {
         n++;

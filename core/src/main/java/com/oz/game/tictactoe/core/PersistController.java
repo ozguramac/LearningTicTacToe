@@ -3,6 +3,7 @@ package com.oz.game.tictactoe.core;
 import com.oz.game.tictactoe.core.persist.PersistEntry;
 import com.oz.game.tictactoe.core.persist.PersistFacade;
 import com.oz.game.tictactoe.core.persist.PersistenceException;
+import com.oz.game.tictactoe.core.persist.StatsContainer;
 
 import java.util.logging.Logger;
 
@@ -45,6 +46,14 @@ class PersistController {
 
     void delete(final GameHistory.Entry entry) throws PersistenceException {
         facade.delete(entry);
+    }
+
+    int getLastCount() throws PersistenceException {
+        final StatsContainer stats = facade.getStats();
+        if (null == stats) {
+            return 0;
+        }
+        return stats.getLastCount();
     }
 }
 

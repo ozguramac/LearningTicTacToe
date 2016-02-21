@@ -6,5 +6,4 @@ package com.oz.game.tictactoe.core.persist;
 public interface PersistContainer {
     <E extends PersistEntry> Iterable<E> getEntries();
     char getWinner();
-    void setTotalCount(int totalCount);
 }

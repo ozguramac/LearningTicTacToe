@@ -12,4 +12,6 @@ public interface PersistFacade
     public PersistEntry matchBest(PersistEntry entry) throws PersistenceException;
 
     public void delete(PersistEntry entry) throws PersistenceException;
+
+    StatsContainer getStats() throws PersistenceException;
 }

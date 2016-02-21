@@ -24,7 +24,6 @@ class GameHistory implements PersistContainer {
     private static int numOfRandomMoves = 0;
     private static int numOfEntries = 0;
     private static int numOfTotalEntriesBegin = 0;
-    private static int numOfTotalEntries = 0;
 
     private final PersistController persistController;
     private final Collection<Entry> entries = new LinkedList<>();
@@ -130,14 +129,6 @@ class GameHistory implements PersistContainer {
         return winner.toChar();
     }
 
-    @Override
-    public void setTotalCount(int totalCount) {
-        numOfTotalEntries = totalCount;
-        if (numOfTotalEntriesBegin == 0) {
-            numOfTotalEntriesBegin = numOfTotalEntries; //once
-        }
-    }
-
     double getGreedyMoveThreshold() {
         return greedyMoveThreshold;
     }
@@ -212,6 +203,22 @@ class GameHistory implements PersistContainer {
         return spot;
     }
 
+    int getNumOfTotalEntries() {
+        try {
+            final int numOfTotalEntries = persistController.getLastCount();
+            if (numOfTotalEntriesBegin == 0) {
+                numOfTotalEntriesBegin = numOfTotalEntries;
+            }
+            return numOfTotalEntries;
+        }
+        catch (PersistenceException e) {
+            log.throwing("Game History", "getNumOfTotalEntries", e);
+            return 0;
+        }
+    }
+
+    int getNumOfNewlyAddedEntries() { return getNumOfTotalEntries() - numOfTotalEntriesBegin; }
+
     static double getPercOfBestMoveFinds() {
         return numBestMoveFinds / ((double) numOfEntries);
     }
@@ -223,9 +230,4 @@ class GameHistory implements PersistContainer {
     static double getPercOfLeastPlayedFinds() { return numOfLeastPlayedFinds / ((double) numOfEntries); }
 
     static double getPercOfRandomMoves() { return numOfRandomMoves / ((double) numOfEntries); }
-
-    static int getNumOfTotalEntries() { return numOfTotalEntries; }
-
-    static int getNumOfNewlyAddedEntries() { return numOfTotalEntries - numOfTotalEntriesBegin; }
-
 }

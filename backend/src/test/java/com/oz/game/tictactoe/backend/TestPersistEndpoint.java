@@ -2,14 +2,12 @@ package com.oz.game.tictactoe.backend;
 
 import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
 import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-import com.googlecode.objectify.ObjectifyService;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.Closeable;
 import java.util.logging.Logger;
 
 /**
@@ -22,11 +20,11 @@ public class TestPersistEndpoint {
              new LocalDatastoreServiceTestConfig()
     );
 
-    private PersistEndpoint endpoint;
+    private BackEndpoint endpoint;
 
     @Before
     public void setUp() throws Exception {
-        endpoint = new PersistEndpoint();
+        endpoint = new BackEndpoint();
         helper.setUp();
     }
 
@@ -39,8 +37,6 @@ public class TestPersistEndpoint {
     @Test
     public void testSave() throws Exception {
         final PersistBean savedPb = save();
-        Assert.assertTrue("Last Count", savedPb.getLastCount() > 1);
-
         for (PersistBeanEntry savedPe : savedPb.getEntries()) {
             Assert.assertNotNull("No db id set", savedPe.getDbId());
             Assert.assertTrue("Incremented usage", savedPe.getN() > 0);
@@ -67,7 +63,7 @@ public class TestPersistEndpoint {
         final PersistBean savedPb = save();
         final PersistBeanEntry pe = savedPb.getEntries()[0];
 
-        log.info("Searching for "+pe);
+        log.info("Searching for " + pe);
         final PersistBeanEntry foundPe = endpoint.load(pe);
         Assert.assertNotNull(foundPe);
         log.info("Found "+foundPe);
@@ -97,26 +93,37 @@ public class TestPersistEndpoint {
         Assert.assertNull(endpoint.load(pe));
     }
 
-    @Test(expected = PersistException.class)
+    @Test
+    public void testStats() throws Exception {
+        save();
+
+        final StatsBean stats = endpoint.getStats();
+
+        Assert.assertTrue("Last Count", stats.getLastCount() > 0);
+
+        log.info(stats.toString());
+    }
+
+    @Test(expected = BackendException.class)
     public void testNegativeSave() throws Exception {
         endpoint.save(null);
     }
-    @Test(expected = PersistException.class)
+    @Test(expected = BackendException.class)
     public void testNegativeLoad() throws Exception {
         endpoint.load(null);
     }
 
-    @Test(expected = PersistException.class)
+    @Test(expected = BackendException.class)
     public void testNegativeFind() throws Exception {
         endpoint.findMax(null);
     }
 
-    @Test(expected = PersistException.class)
+    @Test(expected = BackendException.class)
     public void testNegativeRemove() throws Exception {
         endpoint.remove(null);
     }
 
-    private PersistBean save() throws PersistException {
+    private PersistBean save() throws BackendException {
         final PersistBeanEntry pe0 = new PersistBeanEntry();
         pe0.setO(666);
         pe0.setX(666);

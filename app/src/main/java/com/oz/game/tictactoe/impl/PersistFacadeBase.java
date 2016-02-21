@@ -5,10 +5,12 @@ import android.support.annotation.NonNull;
 import com.oz.game.tictactoe.backend.learningTicTacToeApi.LearningTicTacToeApi;
 import com.oz.game.tictactoe.backend.learningTicTacToeApi.model.PersistBean;
 import com.oz.game.tictactoe.backend.learningTicTacToeApi.model.PersistBeanEntry;
+import com.oz.game.tictactoe.backend.learningTicTacToeApi.model.StatsBean;
 import com.oz.game.tictactoe.core.persist.PersistContainer;
 import com.oz.game.tictactoe.core.persist.PersistEntry;
 import com.oz.game.tictactoe.core.persist.PersistFacade;
 import com.oz.game.tictactoe.core.persist.PersistenceException;
+import com.oz.game.tictactoe.core.persist.StatsContainer;
 
 import java.io.IOException;
 import java.util.LinkedList;
@@ -31,8 +33,8 @@ public abstract class PersistFacadeBase implements PersistFacade {
         }
         content.setEntries(entries);
         try {
-            final PersistBean savedContent = getApi().save(content).execute();
-            persistContainer.setTotalCount( savedContent.getLastCount() );
+            /*final PersistBean savedContent = */getApi().save(content).execute();
+            //TODO: Update entries
         }
         catch (IOException e) {
             throw new PersistenceException("Failed to persist entry", e);
@@ -74,6 +76,22 @@ public abstract class PersistFacadeBase implements PersistFacade {
         }
         catch (IOException e) {
             throw new PersistenceException("Failed to delete entry", e);
+        }
+    }
+
+    @Override
+    public StatsContainer getStats() throws PersistenceException {
+        try {
+            final StatsBean stats = getApi().stats().execute();
+            return new StatsContainer() {
+                @Override
+                public int getLastCount() {
+                    return stats.getLastCount();
+                }
+            };
+        }
+        catch (IOException e) {
+            throw new PersistenceException("Failed to get stats", e);
         }
     }
 

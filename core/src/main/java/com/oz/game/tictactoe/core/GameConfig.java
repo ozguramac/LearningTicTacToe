@@ -14,6 +14,7 @@ public class GameConfig {
     private GameOutput out;
     private PersistFacade persistFacade;
     private Difficulty difficuilty = Difficulty.DEFAULT;
+    private Integer trainingGoal;
 
     public GameConfig persistFacade(final PersistFacade persistFacade) {
         this.persistFacade = persistFacade;
@@ -73,6 +74,15 @@ public class GameConfig {
 
     public GameConfig difficulty(final Difficulty difficulty) {
         this.difficuilty = difficulty;
+        return this;
+    }
+
+    public Integer getTrainingGoal() {
+        return trainingGoal;
+    }
+
+    public GameConfig trainingGoal(final int trainingGoal) {
+        this.trainingGoal = trainingGoal;
         return this;
     }
 

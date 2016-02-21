@@ -37,8 +37,15 @@ public class TrainingSession {
             } while (false == gameSession.isGameOver());
 
             if ( numOfGames < 10 || (i % 100) == 0 ) {
-                log.info(String.format("Played %d games so far", i+1));
+                log.info(String.format("Played %d game(s) so far", i+1));
+
                 gameSession.logStats();
+
+                if (gameSession.isTrained()) {
+                    log.info(String.format("Achieved training goal of %d"
+                            , gameConfig.getTrainingGoal()));
+                    break; //Stop when training goal is reached, if any set
+                }
             }
         }
     }
@@ -57,6 +64,7 @@ public class TrainingSession {
                 })
                 .build();
 
+        //Maximize exploration during initial learning. Maximize greed after learning.
         new TrainingSession(new GameConfig()
                 .persistFacade(new PersistFacadeBase() {
                     @Override
@@ -64,7 +72,8 @@ public class TrainingSession {
                         return api;
                     }
                 })
-                .difficulty(GameConfig.Difficulty.BREEZE) //Maximize exploration
+                .difficulty(GameConfig.Difficulty.BREEZE)
+                .trainingGoal(16000)
         ).startTraining(10000);
     }
 }
