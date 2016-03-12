@@ -25,6 +25,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -230,6 +231,8 @@ public class TicTacToeActivity extends Activity {
                 }
             });
 
+    //TODO: Add UI for showing stats (Learning detail bottom, hover over possible moves for info etc.)
+
     public void resetGame(final View v) {
         lastPlayed = null;
         outcomeText = null;
@@ -244,6 +247,24 @@ public class TicTacToeActivity extends Activity {
 
         final TextView outcome = (TextView) findViewById(R.id.victory);
         outcome.setText("");
+    }
+
+    public void changeDifficulty(final View v) {
+        setDifficulty();
+    }
+
+    private void setDifficulty() {
+        final RatingBar difficultyCtrl = (RatingBar) findViewById(R.id.difficulty);
+        GameConfig.Difficulty difficulty;
+        switch( (int)difficultyCtrl.getRating() ) { //TODO: Better mapping
+            case 0: difficulty = GameConfig.Difficulty.BREEZE; break;
+            case 1: difficulty = GameConfig.Difficulty.EASY; break;
+            default: difficulty = GameConfig.Difficulty.DEFAULT; break;
+            case 3: difficulty = GameConfig.Difficulty.HARD; break;
+            case 4: difficulty = GameConfig.Difficulty.EXPERT; break;
+            case 5: difficulty = GameConfig.Difficulty.GREEDY; break;
+        }
+        gameConfig.difficulty(difficulty);
     }
 
     private void resetSession() {
@@ -271,8 +292,7 @@ public class TicTacToeActivity extends Activity {
             ;
         }
 
-        //TODO: Add UI for difficulty selection
-        gameConfig.difficulty(GameConfig.Difficulty.GREEDY);
+        setDifficulty();
 
         gameSession = new GameSession(gameConfig);
 

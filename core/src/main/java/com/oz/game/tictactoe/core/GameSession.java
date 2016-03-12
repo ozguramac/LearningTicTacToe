@@ -19,11 +19,7 @@ public class GameSession {
     private final Player player0;
     private final Player playerX;
 
-    private final GameOutput out;
-
-    private final boolean debugState;
-
-    private final Integer trainingGoal;
+    private final GameConfig config;
 
     public GameSession(final GameConfig config) {
         referee = new Referee();
@@ -31,18 +27,13 @@ public class GameSession {
         persistController = new PersistController(config.getPersistFacade());
 
         history = new GameHistory(persistController);
-        history.setGreedyMoveThreshold(config.getDifficulty().getThreshold());
 
         state = new GameState(history);
 
         playerX = createPlayer(config, GameState.GamePiece.X);
         player0 = createPlayer(config, GameState.GamePiece.O);
 
-        debugState = config.isPrintState();
-
-        out = config.getOutput();
-
-        trainingGoal = config.getTrainingGoal();
+        this.config = config;
     }
 
     private static Player createPlayer(GameConfig config, GameState.GamePiece gp) {
@@ -66,6 +57,8 @@ public class GameSession {
             return;
         }
 
+        history.setGreedyMoveThreshold(config.getDifficulty().getThreshold());
+
         switch (whoseTurn()) {
             case O:
                 player0.play(state);
@@ -76,6 +69,10 @@ public class GameSession {
             default:
                 break;
         }
+
+        final boolean debugState = config.isPrintState();
+
+        final GameOutput out = config.getOutput();
 
         if (debugState) {
             state.print(System.out);
@@ -102,6 +99,7 @@ public class GameSession {
     }
 
     public void logStats() {
+        final Integer trainingGoal = config.getTrainingGoal();
         final NumberFormat percFmt = NumberFormat.getPercentInstance();
         percFmt.setMinimumFractionDigits(4);
         log.info(String.format("Total # => %d Goal => %s  Move Find Rates: " +
@@ -119,6 +117,7 @@ public class GameSession {
     }
 
     public boolean isTrained() {
+        final Integer trainingGoal = config.getTrainingGoal();
         return trainingGoal != null && history.getNumOfTotalEntries() > trainingGoal;
     }
 }
