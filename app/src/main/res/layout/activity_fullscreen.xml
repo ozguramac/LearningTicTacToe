@@ -182,7 +182,8 @@
                     android:layout_alignParentTop="true"
                     android:longClickable="false"
                     android:rating="2"
-                    android:onClick="changeDifficulty" />
+                    android:onClick="changeDifficulty"
+                    android:contextClickable="false" />
 
                 <TextView
                     android:id="@+id/victory"

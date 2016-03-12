@@ -123,13 +123,19 @@ public class BackEndpoint {
                 final PersistBeanEntry
                          pbe1 = findMax(entry.getX(), entry.getO())
                         ,pbe2 = findMax(entry.getO(), entry.getX());
-                final double
-                         w1 = (pbe1 != null) ? pbe1.getW() : 0.0
-                        ,w2 = (pbe2 != null) ? pbe2.getW() : 0.0;
 
-                if (w1 > w2) {
+                if (null == pbe1 && pbe2 != null) {
                     return pbe2;
                 }
+
+                if (pbe1 != null && null == pbe2) {
+                    return pbe1;
+                }
+
+                if (pbe1.getW() > pbe2.getW()) {
+                    return pbe2;
+                }
+
                 return pbe1;
             }
             finally {
