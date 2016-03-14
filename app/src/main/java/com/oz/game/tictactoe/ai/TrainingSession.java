@@ -72,7 +72,7 @@ public class TrainingSession {
                         return api;
                     }
                 })
-                .difficulty(GameConfig.Difficulty.BREEZE)
+                .difficulty(0.0)
                 .trainingGoal(16000)
         ).startTraining(10000);
     }

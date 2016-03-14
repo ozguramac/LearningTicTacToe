@@ -26,10 +26,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RatingBar;
+import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 
 
 /**
@@ -245,8 +247,12 @@ public class TicTacToeActivity extends Activity {
             button.setEnabled(true);
         }
 
-        final TextView outcome = (TextView) findViewById(R.id.victory);
-        outcome.setText("");
+        setInfoText("");
+    }
+
+    private void setInfoText(final String infoTxt) {
+        final TextView info = (TextView) findViewById(R.id.info);
+        info.setText(infoTxt);
     }
 
     public void changeDifficulty(final View v) {
@@ -254,17 +260,11 @@ public class TicTacToeActivity extends Activity {
     }
 
     private void setDifficulty() {
-        final RatingBar difficultyCtrl = (RatingBar) findViewById(R.id.difficulty);
-        GameConfig.Difficulty difficulty;
-        switch( (int)difficultyCtrl.getRating() ) { //TODO: Better mapping
-            case 0: difficulty = GameConfig.Difficulty.BREEZE; break;
-            case 1: difficulty = GameConfig.Difficulty.EASY; break;
-            default: difficulty = GameConfig.Difficulty.DEFAULT; break;
-            case 3: difficulty = GameConfig.Difficulty.HARD; break;
-            case 4: difficulty = GameConfig.Difficulty.EXPERT; break;
-            case 5: difficulty = GameConfig.Difficulty.GREEDY; break;
-        }
-        gameConfig.difficulty(difficulty);
+        final SeekBar difficultyCtrl = (SeekBar) findViewById(R.id.difficulty);
+        gameConfig.difficulty(difficultyCtrl.getProgress() / (double)difficultyCtrl.getMax());
+
+        final NumberFormat percFmt = NumberFormat.getPercentInstance();
+        setInfoText( "Game difficulty: " + percFmt.format( gameConfig.getDifficulty() ) );
     }
 
     private void resetSession() {
@@ -420,9 +420,11 @@ public class TicTacToeActivity extends Activity {
                     return;
 
                 final Button button = (Button) findViewById(id);
-                if (button.getText().equals("")) {
+                if (button.getText().equals(""))
+                {//TODO: Need more robust way of determining this!
                     button.setText(String.valueOf(gameMove.getPiece()));
-                } else {
+                }
+                else {
                     Log.w(TAG, "Attempted move "+lastPlayed+", but already played "+button.getText());
                 }
 
@@ -430,8 +432,7 @@ public class TicTacToeActivity extends Activity {
             }
 
             if (outcomeText != null) {
-                final TextView outcome = (TextView) findViewById(R.id.victory);
-                outcome.setText(outcomeText);
+                setInfoText(outcomeText);
             }
             else {
                 enableGameButtons(true); //Allow play to continue

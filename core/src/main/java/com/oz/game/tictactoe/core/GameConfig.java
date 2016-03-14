@@ -13,7 +13,7 @@ public class GameConfig {
     private GameInput in;
     private GameOutput out;
     private PersistFacade persistFacade;
-    private Difficulty difficulty = Difficulty.DEFAULT;
+    private double difficulty = 0.5d;
     private Integer trainingGoal;
 
     public GameConfig persistFacade(final PersistFacade persistFacade) {
@@ -70,9 +70,9 @@ public class GameConfig {
         return this;
     }
 
-    public Difficulty getDifficulty() { return difficulty; }
+    public double getDifficulty() { return difficulty; }
 
-    public GameConfig difficulty(final Difficulty difficulty) {
+    public GameConfig difficulty(final double difficulty) {
         this.difficulty = difficulty;
         return this;
     }
@@ -89,24 +89,5 @@ public class GameConfig {
     public static enum PlayerType {
          COMPUTER
         ,HUMAN
-    }
-
-    public static enum Difficulty {
-         BREEZE(0d)
-        ,EASY(.3d)
-        ,DEFAULT(.5d)
-        ,HARD(.7d)
-        ,EXPERT(.9d)
-        ,GREEDY(1d)
-        ;
-        private final double threshold;
-
-        private Difficulty(final double threshold) {
-            this.threshold = threshold;
-        }
-
-        double getThreshold() {
-            return threshold;
-        }
     }
 }

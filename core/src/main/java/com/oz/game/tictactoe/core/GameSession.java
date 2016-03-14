@@ -57,7 +57,7 @@ public class GameSession {
             return;
         }
 
-        history.setGreedyMoveThreshold(config.getDifficulty().getThreshold());
+        history.setGreedyMoveThreshold(config.getDifficulty());
 
         switch (whoseTurn()) {
             case O:
