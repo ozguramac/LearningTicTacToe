@@ -124,19 +124,26 @@ public class BackEndpoint {
                          pbe1 = findMax(entry.getX(), entry.getO())
                         ,pbe2 = findMax(entry.getO(), entry.getX());
 
-                if (null == pbe1 && pbe2 != null) {
-                    return pbe2;
+                final PersistBeanEntry bestPbe;
+                if ( null == pbe2 || (pbe1 != null && pbe1.getW() > pbe2.getW()) ) {
+                    bestPbe = pbe1;
+                }
+                else {
+                    bestPbe = pbe2;
                 }
 
-                if (pbe1 != null && null == pbe2) {
-                    return pbe1;
+                if (null == bestPbe) {
+                    log.info("No best entry found matching " + entry);
+                }
+                else if (bestPbe.getW() > 0.5) {
+                    log.info("Found best " + bestPbe + " matching " + entry);
+                }
+                else {
+                    log.info("Found losing " + bestPbe + " matching " + entry);
+                    return null;
                 }
 
-                if (pbe1.getW() > pbe2.getW()) {
-                    return pbe2;
-                }
-
-                return pbe1;
+                return bestPbe;
             }
             finally {
                 c.close();
@@ -152,7 +159,7 @@ public class BackEndpoint {
         return ofy().load().type(PersistBeanEntry.class)
                 .filter("x", state1)
                 .filter("o", state2)
-                .filter("w >", 0.5) //Filter for better than 50-50 prob!
+                //.filter("w >", 0.5) //Filter for better than 50-50 prob!
                 .order("-w")
                 .first()
                 .now();

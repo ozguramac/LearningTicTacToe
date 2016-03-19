@@ -178,26 +178,24 @@
                     android:id="@+id/info"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentTop="false"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Click a cell to play!"
-                    android:layout_marginTop="10dp"
-                    android:layout_alignParentBottom="true"
                     android:textAlignment="center"
                     android:textIsSelectable="false"
-                    android:layout_centerHorizontal="true" />
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/difficulty" />
 
                 <SeekBar
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/difficulty"
-                    android:onClick="changeDifficulty"
                     android:progress="50"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentLeft="true"
                     android:layout_alignParentStart="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_toLeftOf="@+id/difficultyButton"
+                    android:layout_toStartOf="@+id/difficultyButton" />
 
                 <Button
                     style="?android:attr/buttonStyleSmall"
@@ -205,10 +203,12 @@
                     android:layout_height="wrap_content"
                     android:text="Change Difficulty"
                     android:id="@+id/difficultyButton"
-                    android:layout_centerVertical="true"
-                    android:layout_centerHorizontal="true"
                     android:onClick="changeDifficulty"
-                    android:nestedScrollingEnabled="false" />
+                    android:nestedScrollingEnabled="false"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBottom="@+id/difficulty" />
 
             </RelativeLayout>
         </LinearLayout>
